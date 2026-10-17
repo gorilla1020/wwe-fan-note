@@ -66,5 +66,11 @@ const NEWS = [
  b:"WWEの関係者の話として、グンターのSmackDownでの方向性に、制作陣の一部が少し戸惑っているとレスルボーツが伝えた。会社との対立という話ではない、と添えられている。",
  tags:["選手"], who:["Gunther"],
  src:[["WrestleVotes Radio（The Takedown on SI／Yahoo Sportsが紹介）","https://sports.yahoo.com/articles/latest-potential-wrestlemania-43-main-144536807.html"]],
- res:"open", rn:""}
+ res:"open", rn:""},
+
+{id:"n-cj2026-backup", d:"2026-10-15", k:"rep", t:"クラウン・ジュエル2026、表に出せない「もしもの備え」",
+ b:"10月8日の報道の続報。デイブ・メルツァーによると、リヤドへ行けなくなった場合の備えはあるものの、WWEはそれを表立って認められないという。代わりの案が出るのは、サウジ側のトゥルキ・アルシャイフ氏が安全でないと判断したときだけになりそうだとしている。選手以外のスタッフの一部からサウジ行きに反対の声が出ていて、会社は「足並みをそろえたい」考えだという。",
+ tags:["大会・日程"], who:[],
+ src:[["Wrestling Observer Radio（Wrestling Incが紹介）","https://www.wrestlinginc.com/2287805/wwe-united-front-amidst-crown-jewel-uncertainty/"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
