@@ -126,7 +126,7 @@ const ROSTER = [
 ["AJリー","AJ Lee","ot","","","",""],
 ["オモス","Omos","ot","","","",""],
 ["ブランディ・ローデス","Brandi Rhodes","ot","コーディの妻","","",""],
-["ケラーニ・ジョーダン","Kelani Jordan","ot","NXT女子王者。9月14日のRAWでMITB予選に出場","","",""],
+["ケラーニ・ジョーダン","Kelani Jordan","nw","NXT女子王者。9月14日のRAWでMITB予選に出場","","",""],
 ["ドリー・ファンクJr.","Dory Funk Jr.","ot","8月7日に追悼","","",""],
 ["ネヴィル / PAC","Neville / PAC (Benjamin Satterley)","ot","本名ベンジャミン・サタリー。9月28日のRAW冒頭で追悼","","",""],
 ["ダスティ・ローデス","Dusty Rhodes","ot","コーディの父。名前だけ出る","","",""],
@@ -4468,76 +4468,6 @@ const NAMES = [
 ["ビッグE","Big E",[["ビッグE・ラングストン","WWE"],["ビッグE","WWE"]]],
 ["エリック／アイバー","Erik",[["ウォー・マシーン（ハンソン、レイモンド・ロウ）","ROHなど"],["バイキング・レイダーズ／ウォー・レイダーズ","WWE"]]]
 ];
-// ---- ニュース（公式発表・本人発言・報道・噂） ----
-// d: 記事が出た日 "YYYY-MM-DD"（米国の日付）。2026年の分は「知識はここまで」より後だと中身を折りたたむ。
-// k: off=公式発表 / self=本人発言 / rep=報道（専門メディアが取材として報じたもの） / rum=噂（未確認。いわゆるダートシートの情報も含む）
-// t: 見出し。ぱっと見で結果や筋書きが分からない書き方にする（Xのティーザーと同じ考え方）
-// b: 本文。元記事を写さず、自分の言葉で短く要約する。直接の引用は15語以内の一言だけ
-// tags: 話題（絞り込みのチップになる） / who: 関係する選手（英語名。選手ページにつながる）
-// src: [[媒体名（元の情報源）, URL]] / res: 噂の答え合わせ open=未確定 hit=当たり miss=外れ part=一部当たり、rn: 答え合わせのメモ
-// safe: 1 にすると「知識はここまで」より後でも折りたたまない（会場・日程など、筋書きに関係しない話だけ）
-const NEWS = [
-{id:"n-wm43-announce", d:"2025-09-12", k:"off", t:"レッスルマニア43の開催地はサウジアラビアのリヤド",
- b:"WWEが記者会見で、2027年のレッスルマニア43をサウジアラビアのリヤドで開くと発表。トリプルHとサウジ側のトゥルキ・アルシャイフ氏が登壇した。北米の外で開かれる初めてのレッスルマニアになる。会見ではアンダーテイカーやショーン・マイケルズも顔を見せた。",
- tags:["レッスルマニア43","大会・日程"], who:["Triple H","The Undertaker","Shawn Michaels"],
- src:[["CBS Sports","https://www.cbssports.com/wwe/news/wwe-wrestlemania-43-location-landmark-event-set-to-take-place-in-saudi-arabia-in-2027"],["Wikipedia（英語）","https://en.wikipedia.org/wiki/WrestleMania_43"]]},
-
-{id:"n-rock-raffi", d:"2026-01-21", k:"self", t:"ザ・ロック、サウジでのレッスルマニアに含みを持たせる",
- b:"ザ・ロック本人がインタビュー番組「Raffi Talks」で、サウジで開かれるレッスルマニアについて質問され、大会にもサウジにもワクワクしていると話した。話し合いについては「いい感じだ」とだけ答え、出場するかどうかは明言しなかった。",
- tags:["レッスルマニア43","ザ・ロック"], who:["The Rock"],
- src:[["Solowrestling（Raffi Talksでの発言を紹介）","https://solowrestling.com/us/new/146872-the-rock-leaves-the-door-open-for-wrestlemania-43-in-saudi-arabia"]]},
-
-{id:"n-wm43-date", d:"2026-04-23", k:"rum", t:"レッスルマニア43の日程、狙いは3月末か4月中旬か",
- b:"レスルボーツ（WrestleVotes）によると、WWEは2027年3月27日の週末を狙っていて、4月10日の週末も候補。1夜開催に戻す案もあるが、放送するESPNは2夜開催を望んでいるとファイトフルが伝えた。NXTのスタンド・アンド・デリバーは、サウジでは開かない見込みという。",
- tags:["レッスルマニア43","大会・日程"], who:[],
- src:[["WrestleVotes Radio／Fightful Select（Wrestling Incが紹介）","https://www.wrestlinginc.com/2155566/wwe-wrestlemania-43-nxt-stand-deliver-2027/"]],
- res:"open", rn:"10月中旬の時点で、WWEは日程を正式に発表していない。"},
-
-{id:"n-rock-backup", d:"2026-06-02", k:"rum", t:"ザ・ロックが出ない場合の「代わりの大一番」の噂",
- b:"YouTuberのセルフ・メイド・プロが、WWE内部の人から聞いた話として「ザ・ロックがレッスルマニアに出ないなら、ローマン・レインズ対オバ・フェミを考えている」と話した。本人も、まだ決まっていないことが多いと付け加えている。",
- tags:["レッスルマニア43","ザ・ロック"], who:["The Rock","Roman Reigns","Oba Femi"],
- src:[["Self Made Pro（SEScoopsが紹介）","https://www.sescoops.com/article/wwe-backup-plan-wrestlemania-43-the-rock"]],
- res:"open", rn:""},
-
-{id:"n-wm43-london-raw", d:"2026-06-25", k:"rum", t:"レッスルマニア43直前のRAWはロンドンから？",
- b:"レッスルマニア直前（いわゆるゴーホーム）のRAWを、ロンドンのO2アリーナで開くのではないか、という話がロッカールームで出ているとレスルボーツが伝えた。あくまで選手たちの間の予想という扱い。サウジ開催で本場ロンドンが外れたことへの、ファンの不満を受けた話とも読める。",
- tags:["レッスルマニア43","大会・日程"], who:[],
- src:[["WrestleVotes Radio／Fightful Select（Fightfulが紹介）","https://www.fightful.com/?p=312842"]],
- res:"open", rn:""},
-
-{id:"n-ss2026", d:"2026-07-13", k:"off", t:"サバイバー・シリーズ2026は11月28日、ヒューストンの野球場で",
- b:"WWEが、サバイバー・シリーズ：ウォーゲームズ2026を11月28日（土）に、テキサス州ヒューストンのダイキン・パーク（アストロズの本拠地）で開くと発表した。",
- tags:["大会・日程"], who:[],
- src:[["SEScoops","https://www.sescoops.com/article/wwe-survivor-series-2026-houston-daikin-park"],["WWE公式","https://www.wwe.com/shows/survivor-series-wargames/2026"]], safe:1},
-
-{id:"n-rumble2027", d:"2026-08-04", k:"off", t:"ロイヤルランブル2027はアリゾナのスタジアムで",
- b:"WWEの親会社TKOとアリゾナ州の団体との提携発表の場で、UFCのダナ・ホワイト代表が、2027年2月のロイヤルランブルをアリゾナ州グレンデールのステート・ファーム・スタジアム（NFLカーディナルスの本拠地）で開くと明かした。正確な日付はまだ出ていない。",
- tags:["大会・日程"], who:[],
- src:[["SEScoops","https://www.sescoops.com/article/wwe-royal-rumble-2027-location-venue-revealed"],["Fightful","https://www.fightful.com/wrestling-news/dana-white-confirms-wwe-royal-rumble-2027-will-be-held-in-arizona"]], safe:1},
-
-{id:"n-rock-meltzer", d:"2026-08-25", k:"rep", t:"ザ・ロックの試合は難しい？撮影スケジュールとの兼ね合い",
- b:"デイブ・メルツァーによると、サウジ側はザ・ロックにぜひ試合をしてほしいと考えている。ただ、ザ・ロックは12月から映画「ワイルド・スピード」シリーズ最終作の撮影に入る予定で、メルツァーは練習なしでの試合は考えにくいと見ている。顔を見せるだけなら可能性はある、という見立て。",
- tags:["レッスルマニア43","ザ・ロック"], who:["The Rock"],
- src:[["Wrestling Observer Radio（Wrestling Incが紹介）","https://www.wrestlinginc.com/2243803/wwe-wrestlemania-43-rock-dwayne-johnson-dave-meltzer-saudi-arabia-wants-work/"]]},
-
-{id:"n-cj2026-concern", d:"2026-10-08", k:"rep", t:"クラウン・ジュエル2026のサウジ開催、社内で話し合い",
- b:"11月7日にリヤドで予定されているクラウン・ジュエルについて、WWE社内で予定どおりサウジへ行くかどうかの話し合いが出ていると、フィギュア・フォー・ウィークリーのブライアン・アルバレスが伝えた。リヤドの空港などへの攻撃が報じられ、米国大使館も注意を呼びかけている。大会は予定表に残っていて、会場の準備も始まっているという。",
- tags:["大会・日程"], who:[],
- src:[["Figure Four Weekly（Wrestling Incが紹介）","https://www.wrestlinginc.com/2281871/wwe-crown-jewel-2026-big-topic-conversation-strikes-intensify/"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
-
-{id:"n-wm43-early-card", d:"2026-10-16", k:"rum", t:"レッスルマニア43のメイン候補、早くも名前が挙がる",
- b:"レスルボーツによると、レッスルマニア43の初期案として、世界ヘビー級王者ローマン・レインズ対オバ・フェミが有力になっていて、メインにという声もある。コーディ・ローデスとCMパンクも大きな役割を担う見込みで、サマースラムの再戦の案もあるという。けがで休んでいるリア・リプリーも、回復しだいで女子の大きな試合に関わる見込み。日程の発表は今のところ後回しとのこと。",
- tags:["レッスルマニア43"], who:["Roman Reigns","Oba Femi","Cody Rhodes","CM Punk","Rhea Ripley"],
- src:[["WrestleVotes Radio／Fightful Select（Wrestling Incが紹介）","https://www.wrestlinginc.com/2288510/wwe-wrestlemania-43-early-plans-card-backstage-report/"],["The Takedown on SI（Yahoo Sports）","https://sports.yahoo.com/articles/latest-potential-wrestlemania-43-main-144536807.html"]],
- res:"open", rn:""},
-
-{id:"n-gunther-creative", d:"2026-10-16", k:"rum", t:"SmackDownのある実力者の扱いに、裏方で戸惑いの声",
- b:"WWEの関係者の話として、グンターのSmackDownでの方向性に、制作陣の一部が少し戸惑っているとレスルボーツが伝えた。会社との対立という話ではない、と添えられている。",
- tags:["選手"], who:["Gunther"],
- src:[["WrestleVotes Radio（The Takedown on SI／Yahoo Sportsが紹介）","https://sports.yahoo.com/articles/latest-potential-wrestlemania-43-main-144536807.html"]],
- res:"open", rn:""}
-];
 // WWEを去った人（group "gn"）は、退団の理由とWWEでの日々だけを表示する。人となりの話は tr/kb/ に控えとして置き、公開しない。
 ROSTER.filter((r) => r[2] === "gn").forEach((r) => { const P = PROFILES[r[1]]; if (P && P.facts) P.facts = P.facts.filter((f) => f.cat === "退団の理由" || f.cat === "WWEでの日々"); });
 // 参考動画（技ごとに1本目）: 技の英語名 → [YouTubeの動画ID, 種類, ひとこと]
@@ -5578,7 +5508,7 @@ const Anim3D = (function(){
     if (failed) return false;
     try { await loadThree(); if (!renderer) build(); } catch (e) { failed = true; return false; }
     A = ANIMS[name]; cfg = CFG[name] || A.cfg || { ox: 0, rot: 0, za: 4, zb: -4, az: 20, el: 16, tg: [0, 34, 0] };
-    padM.color.set(A.brand === "RAW" ? 0xF8718C : A.brand === "SD" ? 0x8B8BF2 : 0xF2D24E);
+    padM.color.set(A.brand === "RAW" ? 0xF8718C : A.brand === "SD" ? 0x8B8BF2 : A.brand === "NXT" ? 0xF2D24E : 0x8D8BAB);
     group.rotation.y = cfg.rot * R; baseAz = cfg.az; az = cfg.az; el = cfg.el; t = 0; paused = false; last = 0; zoomK = 1; if (wrap.__zb) { wrap.__zb.textContent = "寄る"; wrap.__zb.setAttribute("aria-pressed", "false"); }
     host.appendChild(wrap);
     if (!raf) raf = requestAnimationFrame(frame);
@@ -5612,10 +5542,11 @@ function identHash(s){ let h = 2166136261; for (const c of s) { h ^= c.charCodeA
 function identIcon(en, g, big){
   const h = identHash(en); let r = "";
   for (let y = 0; y < 5; y++) for (let x = 0; x < 3; x++) if ((h >> (y * 3 + x)) & 1) { r += `<rect x="${x}" y="${y}" width="1" height="1"/>`; if (x < 2) r += `<rect x="${4 - x}" y="${y}" width="1" height="1"/>`; }
-  const c = GTAG[g] === "raw" ? "var(--pink)" : GTAG[g] === "sd" ? "var(--purple)" : "var(--label)";
+  const c = GTAG[g] === "raw" ? "var(--pink)" : GTAG[g] === "sd" ? "var(--purple)" : GTAG[g] === "nxt" ? "var(--yellow)" : "var(--label)";
   return `<span class="ident${big ? " big" : ""}" aria-hidden="true"><svg viewBox="0 0 5 5" fill="${c}">${r}</svg></span>`;
 }
 /* ---------- タブ ---------- */
+const BTAG = (s) => /smack/i.test(s) ? "sd" : /nxt/i.test(s) ? "nxt" : "raw";
 const TABS = ["roster","watch","mic","news","feuds","moves","gloss","hist"];
 function show(tab, push){
   if (!TABS.includes(tab)) tab = "roster";
@@ -5651,9 +5582,9 @@ function mentions(text, name){
 }
 
 /* ---------- 選手 ---------- */
-const GROUPS = [["all","すべて"],["rm","RAW 男子"],["rw","RAW 女子"],["sm","SmackDown 男子"],["sw","SmackDown 女子"],["ot","その他"],["an","実況・解説"],["gn","WWEを去った人"],["lg","レジェンド・NXTほか"]];
-const GLABEL = {rm:"RAW",rw:"RAW",sm:"SmackDown",sw:"SmackDown",ot:"フリー・運営",an:"実況・解説",lg:"レジェンド・NXTほか",gn:"WWEを去った人"};
-const GTAG = {rm:"raw",rw:"raw",sm:"sd",sw:"sd",ot:"ex",an:"ex",lg:"ex",gn:"ex"};
+const GROUPS = [["all","すべて"],["rm","RAW 男子"],["rw","RAW 女子"],["sm","SmackDown 男子"],["sw","SmackDown 女子"],["nm","NXT 男子"],["nw","NXT 女子"],["ot","その他"],["an","実況・解説"],["gn","WWEを去った人"],["lg","レジェンドほか"]];
+const GLABEL = {rm:"RAW",rw:"RAW",sm:"SmackDown",sw:"SmackDown",nm:"NXT",nw:"NXT",ot:"フリー・運営",an:"実況・解説",lg:"レジェンドほか",gn:"WWEを去った人"};
+const GTAG = {rm:"raw",rw:"raw",sm:"sd",sw:"sd",nm:"nxt",nw:"nxt",ot:"ex",an:"ex",lg:"ex",gn:"ex"};
 const STRONG = new Set(["グンター","ダンハウゼン","アスカ"]);
 let rosterGroup = "all";
 function renderRoster(){
@@ -5699,7 +5630,7 @@ function renderFeuds(){
       return { f, ev, last: dated.length ? dated[dated.length - 1] : null };
     }).filter((x) => x.last).sort((a, b) => a.last[0] < b.last[0] ? 1 : a.last[0] > b.last[0] ? -1 : 0);
     html = list.map(({ f, ev, last }) => `<details class="card"><summary>
-        <div class="head"><h2>${esc(f.t)}</h2><span class="tag ${f.b === "RAW" ? "raw" : "sd"}">${esc(f.b)}</span></div>
+        <div class="head"><h2>${esc(f.t)}</h2><span class="tag ${BTAG(f.b)}">${esc(f.b)}</span></div>
         <span class="note"><b class="latin" style="color:var(--fg)">${md(last[0])}</b>　${esc(last[1].length > 64 ? last[1].slice(0, 64) + "…" : last[1])}</span>
       </summary><ul class="tl">${ev.map((x) => `<li><span class="d">${x[0] ? md(x[0]) : "前提"}</span><span>${esc(x[1])}</span></li>`).join("")}</ul></details>`).join("") || `<p class="empty">このラインまでに始まっている抗争がありません。</p>`;
   } else if (feudMode === "log") {
@@ -5916,7 +5847,7 @@ function micWho(en){ const r = ROSTER.find((x) => x[1] === en); return r ? `<but
 function renderMic(){
   const list = (typeof MICS === "undefined" ? [] : MICS).filter((m) => seen(m.d)).sort((x, y) => x.d < y.d ? 1 : -1), hidden = (typeof MICS === "undefined" ? 0 : MICS.length) - list.length;
   $("l-mic").innerHTML = (list.length ? list.map((m, mi) => `<${mi ? "details" : "article"} class="card micep">
-      ${mi ? "<summary>" : ""}<div class="head"><h2>${esc(dateJa(m.d))}　${esc(m.show)}</h2><span class="tag ${m.show === "RAW" ? "raw" : "sd"}">${esc(m.show)}</span></div>${mi ? `<span class="note">${m.segs.map((s) => esc(s.t)).join(" ／ ")}</span><span class="note micopen">開いて読む</span></summary>` : ""}
+      ${mi ? "<summary>" : ""}<div class="head"><h2>${esc(dateJa(m.d))}　${esc(m.show)}</h2><span class="tag ${BTAG(m.show)}">${esc(m.show)}</span></div>${mi ? `<span class="note">${m.segs.map((s) => esc(s.t)).join(" ／ ")}</span><span class="note micopen">開いて読む</span></summary>` : ""}
       ${m.segs.map((s) => `<div class="fact">
         <h3>${esc(s.t)}</h3>
         <div class="row" style="gap:6px;flex-wrap:wrap">${s.who.map(micWho).join("")}</div>
@@ -6069,7 +6000,7 @@ function nodeLabel(n){ const lab = n.kind === "f" ? (n.two ? "VS" : n.ja) : n.ja
 function renderFeudMap(){
   const box = $("l-feuds");
   const G = feudGraph(mapBrand), W = 360; let H = Math.max(420, Math.min(820, 160 + G.nodes.length * 12));
-  let html = `<div class="chips" role="group" aria-label="ブランド">${["RAW", "SmackDown"].map((b) => `<button type="button" class="chip" data-mapbrand="${b}" aria-pressed="${b === mapBrand}">${b}</button>`).join("")}</div>`;
+  let html = `<div class="chips" role="group" aria-label="ブランド">${["RAW", "SmackDown", "NXT"].map((b) => `<button type="button" class="chip" data-mapbrand="${b}" aria-pressed="${b === mapBrand}">${b}</button>`).join("")}</div>`;
   if (!G.nodes.length) { box.innerHTML = html + `<p class="empty">このラインまでに始まっている抗争がありません。</p>`; return; }
   H = layoutGraph(G, W, H);
   const P = new Map(G.nodes.map((n) => [n.id, n]));
@@ -6086,7 +6017,7 @@ function renderFeudMap(){
     let shape;
     if (n.kind === "f") shape = `<rect x="${x - 7}" y="${y - 7}" width="14" height="14" transform="rotate(45 ${x} ${y})" fill="var(--bg3)" stroke="${n.two ? "var(--yellow)" : "var(--purple)"}" stroke-width="2"/>`;
     else if (n.kind === "u") shape = `<rect x="${x - 11}" y="${y - 9}" width="22" height="18" rx="5" fill="var(--bg3)" stroke="var(--mint)" stroke-width="2"/>`;
-    else { const c = n.kind === "t" ? "var(--label)" : GTAG[n.g] === "raw" ? "var(--pink)" : GTAG[n.g] === "sd" ? "var(--purple)" : "var(--label)";
+    else { const c = n.kind === "t" ? "var(--label)" : GTAG[n.g] === "raw" ? "var(--pink)" : GTAG[n.g] === "sd" ? "var(--purple)" : GTAG[n.g] === "nxt" ? "var(--yellow)" : "var(--label)";
       shape = `<circle cx="${x}" cy="${y}" r="9" fill="${c}" stroke="${on ? "var(--yellow)" : "var(--bg3)"}" stroke-width="${on ? 3 : 2}"/>`; }
     const short = nodeLabel(n);
     return `<g class="mapnode" data-mapnode="${esc(n.id)}" opacity="${o}" tabindex="0" role="button" aria-label="${esc(n.kind === "f" ? FEUDS[n.fi].t : n.ja)}">${shape}
@@ -6120,8 +6051,9 @@ function nextShowGuess(){
   const i = LOG.findIndex((l) => l.d === line), cur = LOG[i], nx = LOG[i + 1];
   if (nx) return { d: nx.d, s: nx.s };
   if (!cur) return null;
-  const dt = new Date(2026, +cur.d.slice(0, 2) - 1, +cur.d.slice(3)); const sd = /smack/i.test(cur.s) ? "RAW" : "SmackDown";
-  dt.setDate(dt.getDate() + (sd === "RAW" ? 3 : 4));
+  const dt = new Date(2026, +cur.d.slice(0, 2) - 1, +cur.d.slice(3)); // 週の順番：RAW（月）→ NXT（火）→ SmackDown（金）→ RAW
+  const [sd, add] = /smack/i.test(cur.s) ? ["RAW", 3] : /nxt/i.test(cur.s) ? ["SmackDown", 3] : ["NXT", 1];
+  dt.setDate(dt.getDate() + add);
   return { d: String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0"), s: sd, guess: true };
 }
 function watchPerson(r, open){
@@ -6147,15 +6079,15 @@ function watchSearch(q){
 function renderWatch(){
   const box = $("l-watch"); if (!box) return;
   const nx = nextShowGuess();
-  if (!watchBrand) watchBrand = nx && /smack/i.test(nx.s) ? "SmackDown" : "RAW";
-  const gs = watchBrand === "RAW" ? ["rm", "rw"] : ["sm", "sw"];
+  if (!watchBrand) watchBrand = nx && /smack/i.test(nx.s) ? "SmackDown" : nx && /nxt/i.test(nx.s) ? "NXT" : "RAW";
+  const gs = watchBrand === "RAW" ? ["rm", "rw"] : watchBrand === "NXT" ? ["nm", "nw"] : ["sm", "sw"];
   const feuds = FEUDS.filter((f) => f.b === watchBrand && feudLast(f).length).sort((a, b) => feudLast(a).pop()[0] < feudLast(b).pop()[0] ? 1 : -1);
   const people = ROSTER.filter((r) => gs.includes(r[2]));
   const phrases = PHRASES.filter((p) => people.some((r) => mentions(p[2], r[0])));
   box.innerHTML = `
     <div class="card wnext"><span class="note">次に観る回${nx && nx.guess ? "（予定）" : ""}</span><b class="wshow">${nx ? `<span class="latin">${md(nx.d)}</span>　${esc(nx.s)}` : "—"}</b>
       <span class="note">「知識はここまで」${md(line)}。この画面には、それより後のことは出ません。</span></div>
-    <div class="chips" role="group" aria-label="ブランド">${["RAW", "SmackDown"].map((b) => `<button type="button" class="chip" data-wbrand="${b}" aria-pressed="${b === watchBrand}">${b}</button>`).join("")}
+    <div class="chips" role="group" aria-label="ブランド">${["RAW", "SmackDown", "NXT"].map((b) => `<button type="button" class="chip" data-wbrand="${b}" aria-pressed="${b === watchBrand}">${b}</button>`).join("")}
       <button type="button" class="chip" id="wake" aria-pressed="${!!wakeLock}">画面を消さない</button></div>
     <div class="field"><label for="q-watch">聞こえた名前でさがす（カタカナ・英語・聞き間違いのつづり）</label><input type="search" id="q-watch" placeholder="例: ブレイカー / Breakker / Love Pamela" autocomplete="off"></div>
     <div class="list" id="l-wsearch"></div>
@@ -6297,7 +6229,7 @@ $("l-hist").addEventListener("click", (e) => {
 /* ---------- はじめての人へ（初めて開いたときにも出す） ---------- */
 function renderGuide(){
   const opts = lineSel.innerHTML;
-  const tabs = [["選手","選手ごとのページ。本人が番組やインタビューで話したことを、出典つきで並べています。"],["観戦","録画を観ながら横に置く画面。聞き取れなかった名前をさがせます。"],["マイク","RAWとSmackDownの印象に残ったマイクの要点と、番組に出た英語の解説。"],["記事","番組やインタビューを回ごとにまとめた記事。話題で全選手を横断検索できます。"],["抗争","いまの抗争の流れと相関図。"],["技","技の解説と、3Dで動く技の再現。"],["用語","異名・決め台詞・プロレス用語の日本語訳。"],["特集","管理人セレクト、今日は何の日、名場面、リングネーム辞典、クイズなど。"]];
+  const tabs = [["選手","選手ごとのページ。本人が番組やインタビューで話したことを、出典つきで並べています。"],["観戦","録画を観ながら横に置く画面。聞き取れなかった名前をさがせます。"],["マイク","RAW・SmackDown・NXTの印象に残ったマイクの要点と、番組に出た英語の解説。"],["記事","番組やインタビューを回ごとにまとめた記事。話題で全選手を横断検索できます。"],["抗争","いまの抗争の流れと相関図。"],["技","技の解説と、3Dで動く技の再現。"],["用語","異名・決め台詞・プロレス用語の日本語訳。"],["特集","管理人セレクト、今日は何の日、名場面、リングネーム辞典、クイズなど。"]];
   const champs = atLatest() && typeof CHAMPS !== "undefined" ? CHAMPS.map((c) => `<div class="pair"><div class="l"><b>${esc(c[1])}</b><span>${esc(c[0])}</span></div></div>`).join("") : `<p class="note">「知識はここまで」が最新の回ではないため、ネタバレ防止で表示していません。</p>`;
   $("v-guide").innerHTML = `<h1>はじめての人へ</h1>
     <p class="lead">WWEファンノートは、WWEの選手が番組やインタビューで自分で話したことを、日本語で短くまとめたファンサイトです。WWE公式とは関係ありません。</p>
@@ -6471,10 +6403,10 @@ src.addEventListener("input", () => {
 });
 
 /* ---------- 起動 ---------- */
-// 技の使い手の所属でコーナーパッドの色を決める（RAW=赤、SmackDown=青）
+// 技の使い手の所属でコーナーパッドの色を決める（RAW=赤、SmackDown=青、NXT=黄）
 MOVES.forEach((m) => { const A = ANIMS[m[0]]; if (!A) return;
-  const r = ROSTER.find((x) => /^[rs][mw]$/.test(x[2]) && mentions(m[2], x[0]));
-  const brand = r ? (r[2][0] === "r" ? "RAW" : "SD") : "";
+  const r = ROSTER.find((x) => /^[rsn][mw]$/.test(x[2]) && mentions(m[2], x[0]));
+  const brand = r ? (r[2][0] === "r" ? "RAW" : r[2][0] === "n" ? "NXT" : "SD") : "";
   [m[0]].concat(A.alts || []).forEach((k) => { if (ANIMS[k]) ANIMS[k].brand = brand; }); });
 renderAll(); renderSubs(); setBusy(false);
 const hash = (location.hash || "").replace("#", "");
