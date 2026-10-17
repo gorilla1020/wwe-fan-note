@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WWEファンノート</title>
+<meta name="description" content="WWEの選手が番組やインタビューで自分で話したことを、日本語で短くまとめた非公式ファンサイト。ネタバレ防止つき。">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+1:wght@400;500;700;800;900&display=swap">
+<style>
+/* レイアウト: スマホ1カラム。上に視聴済みライン、下に5タブ。暗い部屋でテレビの横に置く前提の単一ダーク。 */
+/* ===== B5Y RESEARCH design tokens =====
+   色とフォントだけを持つ。レイアウト（サイズ・座標）は各フォーマット側のCSSで定義する。
+   このファイルが色の唯一の定義元。ここ以外に hex を直接書かない。
+*/
+
+:root {
+  /* --- 背景 --- */
+  --bg1:#2b2c58;
+  --bg2:#15162f;
+  --bg3:#0d0e22;
+
+  /* --- 意味を持つ色 --- */
+  --yellow:#F2D24E;   /* 主体・強調・主要数値・結果 */
+  --mint:#4FDC9B;     /* 通る側・機能した・プラス */
+  --pink:#F8718C;     /* 通らない側・崩れ・マイナス */
+  --purple:#8B8BF2;   /* 中立・素材・データ */
+  --label:#8D8BAB;    /* ラベル・補足テキスト */
+  --white:#FFFFFF;
+
+  /* --- ブランド周りの弱いテキスト（濃い順） --- */
+  --dim-strong:#D9D7EE;  /* フッターのブランド表記 B5Y RESEARCH */
+  --dim:#7C7A99;         /* フッター注記 */
+  --dim-weak:#6E6C8C;    /* ヘッダー右のページ番号など */
+
+  /* --- 面と線 --- */
+  --line:rgba(255,255,255,0.09);
+  --panel:rgba(255,255,255,0.035);
+  --panelbd:rgba(255,255,255,0.075);
+
+  /* --- 書体（ウェイトは指定しない。フォーマット側で決める） --- */
+  --font:'M PLUS 1', sans-serif;
+}
+:root{
+  color-scheme: dark;
+  /* 旧変数名を B5Y トークンに対応づける（色の定義元は上の B5Y トークンだけ） */
+  --bg:var(--bg3); --surface:var(--panel); --surface2:var(--panelbd);
+  --fg:var(--white); --soft:var(--dim-strong); --muted:var(--label);
+  --accent:var(--yellow); --on-accent:var(--bg3);
+  --raw:var(--pink); --sd:var(--purple); --warn:var(--pink);
+  --sp1:var(--mint); --sp2:var(--pink); --sp3:var(--purple); --sp4:var(--mint); --sp5:var(--pink); --sp6:var(--purple);
+  --latin:var(--font);
+  --subsize:30px;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{background:var(--bg3)}
+body{background:radial-gradient(1200px 900px at 8% -6%, rgba(96,92,190,0.55) 0%, rgba(96,92,190,0) 62%),linear-gradient(150deg, var(--bg1) 0%, var(--bg2) 42%, var(--bg3) 100%);background-attachment:fixed;min-height:100vh}
+text{font-family:var(--font)}
+body{color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.6;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding-inline:16px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg2);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:8px;flex-wrap:wrap}
+.brand{font-weight:900;font-size:16px;letter-spacing:.02em}
+.linepick{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:var(--accent)}
+select{min-height:44px;border-radius:10px;border:1px solid var(--accent);background:var(--surface);padding:0 10px;font-weight:700;color:var(--fg);max-width:100%}
+main{padding-block:16px}
+section.view{display:flex;flex-direction:column;gap:14px}
+h1{margin:0;font-size:22px;font-weight:900;text-wrap:balance}
+h2{margin:0;font-size:14px;font-weight:900}
+.note{font-size:12px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:700;color:var(--muted)}
+input[type=search],input[type=text],textarea{width:100%;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--surface);padding:10px 12px;font-size:16px}
+textarea{min-height:120px;resize:vertical;line-height:1.5}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:13px;font-weight:700;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:900}
+.btn{min-height:48px;padding:0 18px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-weight:700;cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:900;flex:1}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.check{display:flex;align-items:center;gap:8px;min-height:44px;font-size:13px;font-weight:700}
+.check input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* 字幕 */
+.subs{min-height:260px;display:flex;flex-direction:column;justify-content:flex-end;gap:18px;padding:16px;border-radius:14px;border:1px solid var(--line);background:var(--bg3)}
+.sub{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sub .sp{align-self:flex-start;font-size:12px;font-weight:700}
+.sub .tx{font-size:calc(var(--subsize) * .66);line-height:1.5;font-weight:500;color:var(--label);overflow-wrap:anywhere}
+.sub.now .sp{font-size:14px;font-weight:900;color:var(--on-accent);border-radius:4px;padding:1px 8px}
+.sub.now .tx{font-size:var(--subsize);line-height:1.35;font-weight:900;color:var(--fg)}
+.sub.amb .tx,.sub.amb.now .tx{font-size:calc(var(--subsize) * .55);font-weight:500;color:var(--muted)}
+.sub.memo .tx{font-size:12px;color:var(--muted);font-weight:400}
+.tag{display:inline-block;font-size:11px;font-weight:700;border-radius:4px;padding:1px 7px;border:1px solid currentColor}
+.tag.ex{color:var(--muted)} .tag.raw{color:var(--raw)} .tag.sd{color:var(--sd)} .tag.warn{color:var(--warn)} .tag.acc{color:var(--accent)}
+.latin{font-family:var(--latin);letter-spacing:.03em;font-weight:600}
+#st{font-size:13px;font-weight:700;color:var(--accent);min-height:1.6em}
+
+/* 一覧 */
+.list{display:flex;flex-direction:column}
+details.item{border-bottom:1px solid var(--line)}
+.ident{width:40px;height:40px;flex:none;border-radius:10px;background:var(--bg3);border:1px solid var(--panelbd);display:grid;place-items:center}.ident svg{width:70%;height:70%}.ident.big{width:56px;height:56px;border-radius:13px}
+details.item>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 0;min-height:44px}
+details.item>summary::-webkit-details-marker{display:none}
+.me{width:44px;height:44px;flex:none;border-radius:8px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;text-align:center;line-height:1.1}
+.me.strong{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.ttl{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.ttl b{font-size:16px;font-weight:700}
+.ttl span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.body{display:flex;flex-direction:column;gap:10px;padding:2px 0 16px}
+.kv{display:grid;grid-template-columns:88px minmax(0,1fr);gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted);font-size:12px;padding-top:2px} .kv dd{margin:0;overflow-wrap:anywhere}
+.card{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line)}
+.card.lock{background:transparent;border-style:dashed;border-color:var(--dim-weak)}
+.head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.tl li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;font-size:13px;line-height:1.7;color:var(--soft)}
+.tl .d{font-family:var(--latin);font-size:15px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums}
+.plain{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:13px;line-height:1.7;color:var(--soft)}
+details.card>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:4px}
+details.card>summary::-webkit-details-marker{display:none}
+.divider{display:flex;align-items:center;gap:10px;font-size:12px;font-weight:900;color:var(--accent)}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--accent)}
+.tablebox{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px 8px 0;border-bottom:1px solid var(--line)}
+th{font-size:11px;color:var(--muted);font-weight:700}
+.pair{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.pair .l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.pair .l b{font-size:16px;font-weight:900;overflow-wrap:anywhere}
+.pair .l span{color:var(--muted);font-size:15px;overflow-wrap:anywhere}
+.pair .r{flex:none;max-width:45%;text-align:right;font-size:12px;font-weight:700;color:var(--soft)}
+.move{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-bottom:1px solid var(--line)}
+.move p{margin:0;font-size:14px;color:var(--soft)}
+.empty{padding:24px 0;color:var(--muted);font-size:13px}
+.animbtn{display:block;width:100%;max-width:400px;padding:0;margin-top:4px;border:1px solid var(--line);border-radius:10px;background:var(--bg3);overflow:hidden;cursor:pointer}
+.animbtn canvas{display:block;width:100%;height:auto;aspect-ratio:8/5}
+.v3{display:flex;flex-direction:column;gap:8px;max-width:520px}
+.v3stage{position:relative;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg3)}
+.v3stage canvas{display:block;width:100%;touch-action:pan-y;cursor:grab}
+.v3slow{position:absolute;left:10px;top:10px;background:var(--accent);color:var(--on-accent);font-size:12px;font-weight:900;padding:1px 8px}
+.host3d{display:flex;flex-direction:column;gap:8px}
+.reflink{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:44px;font-size:13px;font-weight:700;color:var(--accent);text-decoration:underline;text-underline-offset:3px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* 選手ページと記事 */
+.back{align-self:flex-start;min-height:44px;padding:0 4px;background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer}
+.lead{margin:0;font-size:16px;line-height:1.8;color:var(--fg);text-wrap:pretty}
+.sec{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12px;font-weight:900;color:var(--accent);letter-spacing:.04em}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}.catblock[hidden]{display:none}.card.hit{display:flex;flex-direction:column;gap:2px;text-align:left;width:100%}.micl{display:flex;flex-direction:column;gap:8px;margin:4px 0;list-style:none;padding-left:0}.micl .note{margin-right:8px}.micl li{border-left:2px solid var(--accent);padding-left:10px}details.micep>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:6px}details.micep>summary::-webkit-details-marker{display:none}details.micep[open] .micopen{display:none}.micopen{color:var(--accent);font-weight:700}span.chip{display:inline-flex;align-items:center;cursor:default}.card.hist h3{margin:0;font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}.card.hist p{margin:0;font-size:14px;line-height:1.8;color:var(--soft)}.card.tip{border-color:var(--mint)}.card.tip b{color:var(--mint)}.tipbtn,.linkrow a.tipbtn{display:inline-flex;border:0;box-shadow:none;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:var(--mint);color:var(--bg3);font-weight:800;text-decoration:none}.tipbtn:hover{filter:brightness(1.08)}.tipfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding-block:20px 32px;border-top:1px solid var(--line);margin-top:24px;color:var(--label);font-size:13px}.tipfoot[hidden]{display:none}
+.fact{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--line)}
+.fact h3{margin:0;font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}
+.fact p{margin:0;font-size:14px;line-height:1.8;color:var(--soft)}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:12px;color:var(--muted)}
+.meta a,.linkrow a{color:var(--accent);text-decoration:underline;text-underline-offset:3px;font-weight:700}
+.linkrow{display:flex;flex-direction:column}
+.linkrow a,.linkrow button{display:flex;align-items:center;min-height:44px;font-size:14px;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);padding:0;cursor:pointer;color:var(--accent);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.acard{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;color:var(--fg)}
+.acard b{font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}
+.acard span{font-size:13px;color:var(--soft);line-height:1.7}
+.who{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.ilinks{display:flex;flex-wrap:wrap;gap:4px 14px}
+.ilink{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0;background:none;border:none;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.mapbox{border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto}
+.mapnode{cursor:pointer}
+.mapnode:focus{outline:none}
+.mapnode:focus-visible circle,.mapnode:focus-visible rect:first-child{stroke:var(--yellow)}
+.maplab{font-size:10px;font-weight:700;fill:var(--white);paint-order:stroke;stroke:var(--bg3);stroke-width:3px}
+.maplab.hub{fill:var(--label);font-size:9px}
+.maplab.on{fill:var(--yellow)}
+.maplegend{flex-wrap:wrap}
+.wnext .wshow{font-size:22px}
+#v-watch .kv{font-size:15px}
+#v-watch details.item>summary b{font-size:17px}
+
+/* 下タブ */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--bg2);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs .wrap{display:flex;padding-inline:4px}
+.tab{flex:1;min-width:0;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
+.tab[aria-current=page]{color:var(--accent)}
+.tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tag.k-off{color:var(--mint)}.tag.k-self{color:var(--purple)}.tag.k-rep{color:var(--yellow)}.tag.k-rum{color:var(--pink)}
+.tag.r-hit{color:var(--mint)}.tag.r-miss{color:var(--pink)}.tag.r-part{color:var(--yellow)}.tag.r-open{color:var(--label)}
+.klegend{font-size:12px;color:var(--label);line-height:2;margin:4px 0 8px}.klegend .tag{margin-right:4px}
+.wire .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.wire h3{margin:6px 0 4px;font-size:16px;line-height:1.5}.wire p{margin:6px 0;font-size:14px;line-height:1.75}.wire .res{border-left:3px solid var(--line);padding-left:8px;margin-top:8px}
+details.wire>summary .later{color:var(--label);font-size:12px}
+</style>
+
+<header class="top"><div class="wrap">
+  <div class="row" style="gap:10px"><div class="brand">WWEファンノート</div><button type="button" class="chip" id="guide-btn" style="min-height:32px;padding:0 10px;font-size:12px">はじめての人へ</button></div>
+  <label class="linepick" for="line">知識はここまで <select id="line"></select></label>
+</div></header>
+
+<main class="wrap">
+
+<section class="view" id="v-sub" hidden>
+  <div class="subs" id="subs" aria-live="polite"></div>
+  <div class="row" style="justify-content:space-between">
+    <div id="st" role="status"></div>
+    <div class="row">
+      <button class="chip" id="fs-down" type="button" aria-label="字幕の文字を小さく">A−</button>
+      <button class="chip" id="fs-up" type="button" aria-label="字幕の文字を大きく">A＋</button>
+    </div>
+  </div>
+  <form id="f" class="view">
+    <div class="field">
+      <label for="src">英語の文字起こし（貼り付け、またはキーボードの音声入力）</label>
+      <textarea id="src" placeholder="ここに英語を入れて「訳す」"></textarea>
+    </div>
+    <div class="field">
+      <label for="hint">話している人（わかれば。例: グンター、ダンハウゼン）</label>
+      <input type="text" id="hint" list="names" autocomplete="off">
+      <datalist id="names"></datalist>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="go" type="submit">訳す</button>
+      <button class="btn" id="stop" type="button" hidden>止める</button>
+      <button class="btn" id="clear" type="button">消す</button>
+    </div>
+    <div class="row">
+      <label class="check"><input type="checkbox" id="auto"> 入力が止まったら自動で訳す</label>
+      <label class="check" for="tier">訳し方
+        <select id="tier"><option value="quick">速さ優先</option><option value="default">質優先</option></select>
+      </label>
+    </div>
+    <p class="note" id="nosample" hidden>この表示環境では、ページからClaudeに訳を頼めません。選手・抗争・技・用語のタブはそのまま使えます。</p>
+    <p class="note">このページはマイクを直接使えません。テレビの音を拾うときは、スマホのキーボードの音声入力（英語）で上の欄に文字を入れてください。「自動で訳す」を入れておくと、入力が止まるたびに続きだけを訳します。訳にはあなたのClaudeの利用枠を使います。</p>
+  </form>
+</section>
+
+<section class="view" id="v-roster" hidden>
+  <h1>選手</h1>
+  <div class="field"><label for="q-roster">名前・異名・英語でさがす</label><input type="search" id="q-roster" placeholder="例: グンター / Gunther"></div>
+  <div class="chips" id="c-roster"></div>
+  <p class="note" id="roster-note"></p>
+  <div class="list" id="l-roster"></div>
+  <details class="card" hidden><summary><h2>表にない選手・話者不明のとき</h2><span class="note">タイプ別の基本口調と、濃さの基準</span></summary>
+    <div class="tablebox"><table id="t-fallback"></table></div>
+    <ul class="plain" id="l-rules"></ul>
+  </details>
+</section>
+
+<section class="view" id="v-news" hidden>
+  <h1>記事・ニュース</h1>
+  <div class="chips" id="c-newsmode"></div>
+  <div id="news-wire">
+  <p class="note">WWEに関するニュースと噂を集めています。どこから出た話かを4つに分けて表示します。「知識はここまで」より後に出た話は、見出しだけ出して中身を折りたたみます（見出しは結果が分からない書き方にしています）。</p>
+  <div class="klegend"><span class="tag k-off">公式発表</span>WWEや関係団体の発表　<span class="tag k-self">本人発言</span>選手本人がインタビュー等で話したこと　<span class="tag k-rep">報道</span>専門メディアが取材として報じたこと　<span class="tag k-rum">噂</span>未確認の情報（外れることもあります）</div>
+  <div class="chips" id="c-wirek"></div>
+  <div class="chips" id="c-wiret"></div>
+  <div class="list" id="l-wire" style="gap:12px"></div>
+  </div>
+  <div id="news-arts" hidden>
+  <p class="note">番組やインタビューで選手本人が話したことを、回ごとにまとめています。「知識はここまで」より後の記事は隠れます。</p>
+  <div class="field"><label for="q-news">話題でさがす（全選手の項目から）</label><input type="search" id="q-news" placeholder="例: アニメ / 犬 / 父 / 日本" autocomplete="off"></div>
+  <div class="list" id="l-search" style="gap:8px" hidden></div>
+  <div class="list" id="l-news" style="gap:12px"></div>
+  </div>
+</section>
+
+<section class="view" id="v-watch" hidden>
+  <h1>観戦のお供</h1>
+  <p class="note">録画を観ながら横に置いておく画面です。聞き取れなかった名前をさがしたり、いまの抗争を確かめたりできます。</p>
+  <div class="view" id="l-watch"></div>
+</section>
+
+<section class="view" id="v-mic" hidden>
+  <h1>マイク</h1>
+  <p class="note">8月からのRAWとSmackDownで印象に残ったマイクを、回ごとにまとめています。いちばん新しい回以外は、タップで開きます。全文訳ではなく、要点と短い一言の訳です。くわしくは公式動画へ。「知識はここまで」より後の回は隠れます。</p>
+  <div class="list" id="l-mic" style="gap:14px"></div>
+</section>
+
+<section class="view" id="v-player" hidden></section>
+<section class="view" id="v-article" hidden></section>
+<section class="view" id="v-guide" hidden></section>
+
+<section class="view" id="v-feuds" hidden>
+  <h1>抗争</h1>
+  <div class="chips" id="c-feuds"></div>
+  <div class="view" id="l-feuds"></div>
+</section>
+
+<section class="view" id="v-moves" hidden>
+  <h1>技の解説</h1>
+  <div class="field"><label for="q-moves">技名・使い手でさがす</label><input type="search" id="q-moves" placeholder="例: RKO / スピアー / ペンタ"></div>
+  <div class="chips" id="c-moves"></div>
+  <p class="note" id="moves-note"></p>
+  <p class="note">参考動画はYouTubeで開きます。YouTubeのおすすめ欄には最近の試合結果が出ることがあるので、ネタバレに注意してください。動画は題名で選んでいて、中身を確認したのはRKOだけです。</p>
+  <div class="list" id="l-moves"></div>
+</section>
+
+<section class="view" id="v-gloss" hidden>
+  <h1>用語</h1>
+  <div class="field"><label for="q-gloss">英語・日本語でさがす</label><input type="search" id="q-gloss" placeholder="例: Acknowledge me / 一蓮托生"></div>
+  <div class="chips" id="c-gloss"></div>
+  <div class="list" id="l-gloss"></div>
+</section>
+
+<section class="view" id="v-hist" hidden>
+  <h1>特集</h1>
+  <div class="chips" id="c-hist"></div>
+  <p class="note" id="hist-note"></p>
+  <p class="note">動画はWWE公式YouTubeの検索結果で開きます。おすすめ欄には最近の試合結果が出ることがあるので、ネタバレに注意してください。</p>
+  <div class="list" id="l-hist" style="gap:12px"></div>
+</section>
+
+</main>
+<footer class="tipfoot wrap" id="tipfoot" hidden></footer>
+
+<nav class="tabs" aria-label="画面の切り替え"><div class="wrap">
+  <button class="tab" type="button" data-tab="roster"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>選手</button>
+  <button class="tab" type="button" data-tab="watch"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>観戦</button>
+  <button class="tab" type="button" data-tab="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>マイク</button>
+  <button class="tab" type="button" data-tab="news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>記事</button>
+  <button class="tab" type="button" data-tab="feuds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg>抗争</button>
+  <button class="tab" type="button" data-tab="moves"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l6-6"/><path d="M10 14l-2-6 5 2 3-6 1 7 4 2-6 2z"/></svg>技</button>
+  <button class="tab" type="button" data-tab="gloss"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>用語</button>
+  <button class="tab" type="button" data-tab="hist"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>特集</button>
+</div></nav>
+
+<script src="all.js"></script>
+
+</html>
