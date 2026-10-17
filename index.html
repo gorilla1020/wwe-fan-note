@@ -146,8 +146,9 @@ th{font-size:11px;color:var(--muted);font-weight:700}
 /* 選手ページと記事 */
 .back{align-self:flex-start;min-height:44px;padding:0 4px;background:none;border:none;color:var(--accent);font-size:13px;font-weight:700;cursor:pointer}
 .lead{margin:0;font-size:16px;line-height:1.8;color:var(--fg);text-wrap:pretty}
-.sec{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12px;font-weight:900;color:var(--accent);letter-spacing:.04em}
-.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.sec{display:flex;align-items:center;gap:12px;margin-top:20px;padding:2px 0 2px 12px;border-left:4px solid var(--accent);font-size:18px;font-weight:900;line-height:1.35;color:var(--fg);letter-spacing:.02em;text-wrap:balance}
+.sec::after{content:"";flex:1;min-width:24px;height:1px;background:linear-gradient(90deg,rgba(242,210,78,.45),rgba(242,210,78,0))}
+.field label{font-size:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}.chip.on{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}.catblock[hidden]{display:none}.card.hit{display:flex;flex-direction:column;gap:2px;text-align:left;width:100%}.micl{display:flex;flex-direction:column;gap:8px;margin:4px 0;list-style:none;padding-left:0}.micl .note{margin-right:8px}.micl li{border-left:2px solid var(--accent);padding-left:10px}details.micep>summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:6px}details.micep>summary::-webkit-details-marker{display:none}details.micep[open] .micopen{display:none}.micopen{color:var(--accent);font-weight:700}span.chip{display:inline-flex;align-items:center;cursor:default}.card.hist h3{margin:0;font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}.card.hist p{margin:0;font-size:14px;line-height:1.8;color:var(--soft)}.card.tip{border-color:var(--mint)}.card.tip b{color:var(--mint)}.tipbtn,.linkrow a.tipbtn{display:inline-flex;border:0;box-shadow:none;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;background:var(--mint);color:var(--bg3);font-weight:800;text-decoration:none}.tipbtn:hover{filter:brightness(1.08)}.tipfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px;padding-block:20px 32px;border-top:1px solid var(--line);margin-top:24px;color:var(--label);font-size:13px}.tipfoot[hidden]{display:none}
 .fact{display:flex;flex-direction:column;gap:6px;padding:14px 0;border-bottom:1px solid var(--line)}
 .fact h3{margin:0;font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}
@@ -159,6 +160,7 @@ th{font-size:11px;color:var(--muted);font-weight:700}
 .acard{display:flex;flex-direction:column;gap:6px;width:100%;text-align:left;padding:14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);cursor:pointer;color:var(--fg)}
 .acard b{font-size:17px;font-weight:900;line-height:1.45;text-wrap:balance}
 .acard span{font-size:13px;color:var(--soft);line-height:1.7}
+.acard .meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px}.acard .hlist{display:flex;flex-direction:column;gap:6px}.acard .hlist b{font-size:15px;line-height:1.5}.acard .hmore{color:var(--accent);font-weight:700;font-size:12px}
 .who{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .ilinks{display:flex;flex-wrap:wrap;gap:4px 14px}
 .ilink{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0;background:none;border:none;color:var(--accent);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
@@ -261,8 +263,8 @@ details.wire>summary .later{color:var(--label);font-size:12px}
 </section>
 
 <section class="view" id="v-watch" hidden>
-  <h1>観戦のお供</h1>
-  <p class="note">録画を観ながら横に置いておく画面です。聞き取れなかった名前をさがしたり、いまの抗争を確かめたりできます。</p>
+  <h1>ホーム</h1>
+  <p class="note">次に観る回と、今週の話題をまとめています。下の「観戦のお供」は、録画を観ながら横に置いておく欄です。</p>
   <div class="view" id="l-watch"></div>
 </section>
 
@@ -310,8 +312,8 @@ details.wire>summary .later{color:var(--label);font-size:12px}
 <footer class="tipfoot wrap" id="tipfoot" hidden></footer>
 
 <nav class="tabs" aria-label="画面の切り替え"><div class="wrap">
+  <button class="tab" type="button" data-tab="watch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>ホーム</button>
   <button class="tab" type="button" data-tab="roster"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>選手</button>
-  <button class="tab" type="button" data-tab="watch"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg>観戦</button>
   <button class="tab" type="button" data-tab="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>マイク</button>
   <button class="tab" type="button" data-tab="news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>記事</button>
   <button class="tab" type="button" data-tab="feuds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg>抗争</button>

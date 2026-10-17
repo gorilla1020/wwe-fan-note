@@ -5547,9 +5547,9 @@ function identIcon(en, g, big){
 }
 /* ---------- タブ ---------- */
 const BTAG = (s) => /smack/i.test(s) ? "sd" : /nxt/i.test(s) ? "nxt" : "raw";
-const TABS = ["roster","watch","mic","news","feuds","moves","gloss","hist"];
+const TABS = ["watch","roster","mic","news","feuds","moves","gloss","hist"];
 function show(tab, push){
-  if (!TABS.includes(tab)) tab = "roster";
+  if (!TABS.includes(tab)) tab = "watch";
   TABS.forEach((t) => { $("v-" + t).hidden = t !== tab; }); $("v-sub").hidden = true;
   $("v-player").hidden = true; $("v-article").hidden = true; $("v-guide").hidden = true;
   document.querySelectorAll(".tab").forEach((b) => { if (b.dataset.tab === tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
@@ -6045,6 +6045,37 @@ function mapInfo(n, G, P){
     ${n.kind === "p" && PROFILES[n.en] ? `<button type="button" class="chip" data-player="${esc(n.en)}" style="align-self:flex-start">選手のページを見る</button>` : ""}</div>`;
 }
 
+/* ---------- ホーム（今週の話題）：最新のマイク・ニュース・今日は何の日 ---------- */
+function homeTop(){
+  let h = "";
+  const ml = (typeof MICS === "undefined" ? [] : MICS).filter((m) => seen(m.d)).sort((x, y) => x.d < y.d ? 1 : -1)[0];
+  if (ml) h += `<div class="sec">最新のマイク</div><button type="button" class="acard" data-gotab="mic">
+      <span class="meta"><span class="tag ${BTAG(ml.show)}">${esc(ml.show)}</span><span class="note">${esc(dateJa(ml.d))}</span></span>
+      <span class="hlist">${ml.segs.slice(0, 3).map((x) => `<b>${esc(x.t)}</b>`).join("")}</span>
+      <span class="hmore">${ml.segs.length > 3 ? `ほか${ml.segs.length - 3}本・` : ""}今週の英語もマイクのタブで →</span></button>`;
+  const nw = typeof NEWS === "undefined" ? [] : NEWS.slice().sort((x, y) => x.d < y.d ? 1 : x.d > y.d ? -1 : 0).slice(0, 3);
+  if (nw.length) h += `<div class="sec">ニュース</div>` + nw.map((n) => `<button type="button" class="acard" data-gotab="news">
+      <span class="meta"><span class="tag k-${n.k}">${esc(WK[n.k] || "")}</span><span class="note">${esc(dateJa(n.d))}</span></span><b>${esc(n.t)}</b>
+      ${n.safe || seen(n.d) ? "" : `<span class="note">「知識はここまで」より後に出た話です。中身は記事のタブで開けます。</span>`}</button>`).join("")
+    + `<button type="button" class="back" data-gotab="news">ニュースをもっと見る →</button>`;
+  if (typeof TODAY !== "undefined") {
+    const now = new Date();
+    const dist = (d) => { let x = Math.round((new Date(2001, +d.slice(5, 7) - 1, +d.slice(8)) - new Date(2001, now.getMonth(), now.getDate())) / 864e5); if (x > 182) x -= 365; if (x < -182) x += 365; return x; };
+    const near = TODAY.filter((x) => seen(x[0]) && Math.abs(dist(x[0])) <= 14).sort((a, b) => Math.abs(dist(a[0])) - Math.abs(dist(b[0])) || dist(b[0]) - dist(a[0]));
+    if (near.length) { const x = near[0], d = dist(x[0]);
+      h += `<div class="sec">今日は何の日</div><button type="button" class="acard" data-gotab="hist" data-hcat="today">
+        <span class="meta"><span class="tag acc">${d === 0 ? "今日" : d < 0 ? `${-d}日前の日付` : `${d}日後の日付`}</span><span class="note">${esc(histDate(x[0]))}</span></span><b>${esc(x[1])}</b>
+        <span class="hmore">前後2週間の出来事を見る →</span></button>`; }
+  }
+  return h;
+}
+document.addEventListener("click", (e) => {
+  const g = e.target.closest("[data-gotab]"); if (!g) return;
+  const t = g.dataset.gotab;
+  if (t === "news" && newsMode !== "wire") { newsMode = "wire"; store.set("newsmode", "wire"); renderNewsMode(); }
+  if (t === "hist" && g.dataset.hcat) { histCat = g.dataset.hcat; store.set("hist", histCat); renderHist(); }
+  sub = null; show(t, true);
+});
 /* ---------- 観戦のお供 ---------- */
 let watchBrand = null, wakeLock = null;
 function nextShowGuess(){
@@ -6087,6 +6118,9 @@ function renderWatch(){
   box.innerHTML = `
     <div class="card wnext"><span class="note">次に観る回${nx && nx.guess ? "（予定）" : ""}</span><b class="wshow">${nx ? `<span class="latin">${md(nx.d)}</span>　${esc(nx.s)}` : "—"}</b>
       <span class="note">「知識はここまで」${md(line)}。この画面には、それより後のことは出ません。</span></div>
+    ${homeTop()}
+    <div class="sec">観戦のお供</div>
+    <p class="note" style="margin:0">録画を観ながら横に置いておく欄です。ブランドを選ぶと、その番組の抗争・王者・選手に切り替わります。</p>
     <div class="chips" role="group" aria-label="ブランド">${["RAW", "SmackDown", "NXT"].map((b) => `<button type="button" class="chip" data-wbrand="${b}" aria-pressed="${b === watchBrand}">${b}</button>`).join("")}
       <button type="button" class="chip" id="wake" aria-pressed="${!!wakeLock}">画面を消さない</button></div>
     <div class="field"><label for="q-watch">聞こえた名前でさがす（カタカナ・英語・聞き間違いのつづり）</label><input type="search" id="q-watch" placeholder="例: ブレイカー / Breakker / Love Pamela" autocomplete="off"></div>
@@ -6229,7 +6263,7 @@ $("l-hist").addEventListener("click", (e) => {
 /* ---------- はじめての人へ（初めて開いたときにも出す） ---------- */
 function renderGuide(){
   const opts = lineSel.innerHTML;
-  const tabs = [["選手","選手ごとのページ。本人が番組やインタビューで話したことを、出典つきで並べています。"],["観戦","録画を観ながら横に置く画面。聞き取れなかった名前をさがせます。"],["マイク","RAW・SmackDown・NXTの印象に残ったマイクの要点と、番組に出た英語の解説。"],["記事","番組やインタビューを回ごとにまとめた記事。話題で全選手を横断検索できます。"],["抗争","いまの抗争の流れと相関図。"],["技","技の解説と、3Dで動く技の再現。"],["用語","異名・決め台詞・プロレス用語の日本語訳。"],["特集","管理人セレクト、今日は何の日、名場面、リングネーム辞典、クイズなど。"]];
+  const tabs = [["ホーム","次に観る回、最新のマイクとニュース、今日は何の日。録画を観ながら横に置いて、聞き取れなかった名前をさがすこともできます。"],["選手","選手ごとのページ。本人が番組やインタビューで話したことを、出典つきで並べています。"],["マイク","RAW・SmackDown・NXTの印象に残ったマイクの要点と、番組に出た英語の解説。"],["記事","番組やインタビューを回ごとにまとめた記事。話題で全選手を横断検索できます。"],["抗争","いまの抗争の流れと相関図。"],["技","技の解説と、3Dで動く技の再現。"],["用語","異名・決め台詞・プロレス用語の日本語訳。"],["特集","管理人セレクト、今日は何の日、名場面、リングネーム辞典、クイズなど。"]];
   const champs = atLatest() && typeof CHAMPS !== "undefined" ? CHAMPS.map((c) => `<div class="pair"><div class="l"><b>${esc(c[1])}</b><span>${esc(c[0])}</span></div></div>`).join("") : `<p class="note">「知識はここまで」が最新の回ではないため、ネタバレ防止で表示していません。</p>`;
   $("v-guide").innerHTML = `<h1>はじめての人へ</h1>
     <p class="lead">WWEファンノートは、WWEの選手が番組やインタビューで自分で話したことを、日本語で短くまとめたファンサイトです。WWE公式とは関係ありません。</p>
@@ -6250,11 +6284,11 @@ function renderGuide(){
       <li>マイクは要点と短い一言の訳だけで、全文訳は載せていません。くわしくは公式動画へ。</li>
       <li>WWEを去った人は、退団の理由とWWEでの日々だけを載せています。</li>
     </ul>
-    <button type="button" class="back" id="g-close">選手一覧へ</button>`;
+    <button type="button" class="back" id="g-close">ホームへ</button>`;
   $("g-line").value = line;
-  const start = () => { line = $("g-line").value; lineSel.value = line; store.set("line", line); store.set("welcomed", "1"); renderAll(); show("roster", true); };
+  const start = () => { line = $("g-line").value; lineSel.value = line; store.set("line", line); store.set("welcomed", "1"); renderAll(); show("watch", true); };
   $("g-start").onclick = start;
-  $("g-close").onclick = () => { store.set("welcomed", "1"); show("roster", true); };
+  $("g-close").onclick = () => { store.set("welcomed", "1"); show("watch", true); };
 }
 function showGuide(push){
   TABS.forEach((t) => { $("v-" + t).hidden = true; }); $("v-sub").hidden = true; $("v-player").hidden = true; $("v-article").hidden = true;
@@ -6411,7 +6445,7 @@ MOVES.forEach((m) => { const A = ANIMS[m[0]]; if (!A) return;
 renderAll(); renderSubs(); setBusy(false);
 const hash = (location.hash || "").replace("#", "");
 const hm = /^(player|article)\/(.+)$/.exec(hash);
-if (hm) openSub(hm[1], decodeURIComponent(hm[2]), false); else if (hash === "guide" || !store.get("welcomed", "")) showGuide(false); else show(TABS.includes(hash) ? hash : store.get("tab", "roster"), false);
+if (hm) openSub(hm[1], decodeURIComponent(hm[2]), false); else if (hash === "guide" || !store.get("welcomed", "")) showGuide(false); else show(TABS.includes(hash) ? hash : "watch", false);
 (async () => {
   sample = null; // その場で訳す機能は使わない（リンク共有のため外した）
   if (!sample) $("nosample").hidden = false;
