@@ -6287,6 +6287,14 @@ function renderGuide(){
     <div class="sec">タブの使い方</div>
     <div class="list">${tabs.map((t) => `<div class="pair"><div class="l"><b>${esc(t[0])}</b><span style="font-size:13px">${esc(t[1])}</span></div></div>`).join("")}</div>
     <div class="sec">いまの王者</div>${champs}
+    <div class="sec">更新の予定</div>
+    <ul class="plain">
+      <li>RAW：毎週火曜の午後（日本時間）。その日の朝に放送された回のマイクと「今週の英語」を足します。</li>
+      <li>NXT：毎週水曜の午後（日本時間）。その日の朝に放送された回のマイクと「今週の英語」を足します。</li>
+      <li>SmackDown：毎週土曜の昼すぎ（日本時間）。その日の朝に放送された回のマイクと「今週の英語」、その週に出た選手の番組を足します。</li>
+      <li>ニュース：毎朝。</li>
+      <li>放送直後に足すので、新しい回は「知識はここまで」でその回を選ぶまで表示されません。</li>
+    </ul>
     <div class="sec">このサイトのきまり</div>
     <ul class="plain">
       <li>選手のページには、本人が話したことだけを載せています。本人以外の話は「第三者の話」と書いています。</li>
