@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0f">
+<title>WWE同時字幕</title>
+<style>
+:root{
+  --bg:#0b0b0f; --panel:#16161d; --line:#2a2a35; --text:#f4f4f6; --sub:#9a9aa8;
+  --accent:#ffd23f; --red:#ff4d5e; --ok:#3ddc84; --fs:30px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);
+  font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;-webkit-text-size-adjust:100%}
+body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
+header h1{font-size:15px;font-weight:800;letter-spacing:.04em;flex:1}
+#dot{width:10px;height:10px;border-radius:50%;background:#555}
+#dot.on{background:var(--red);box-shadow:0 0 0 0 rgba(255,77,94,.6);animation:pulse 1.6s infinite}
+#dot.busy{background:var(--accent)}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(255,77,94,0)}100%{box-shadow:0 0 0 0 rgba(255,77,94,0)}}
+#state{font-size:12px;color:var(--sub)}
+button{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+button:active{transform:scale(.97)}
+#subs{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;gap:14px}
+.line{opacity:.38;font-size:calc(var(--fs)*.62);line-height:1.45;font-weight:700;transition:opacity .3s}
+.line.cur{opacity:1;font-size:var(--fs)}
+.line.prev{opacity:.62;font-size:calc(var(--fs)*.75)}
+.who{display:block;color:var(--accent);font-size:.55em;font-weight:800;margin-bottom:2px;letter-spacing:.03em}
+.ja{white-space:pre-wrap;word-break:break-word}
+.en{display:block;color:var(--sub);font-size:13px;font-weight:400;margin-top:4px;line-height:1.4}
+body.noen .en,body.noen #interim{display:none}
+#interim{min-height:20px;padding:0 16px 8px;color:#6c6c7a;font-size:13px;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:rtl;text-align:left}
+#interim span{direction:ltr;unicode-bidi:plaintext}
+#empty{color:var(--sub);font-size:15px;line-height:1.8;text-align:center;margin:auto 0}
+footer{display:flex;align-items:center;gap:8px;padding:10px 16px 14px;border-top:1px solid var(--line)}
+#go{flex:1.2;min-width:0;padding:14px;font-size:17px;font-weight:800;background:var(--red);border-color:var(--red);color:#fff}
+#go.stop{background:var(--panel);border-color:var(--line);color:var(--text)}
+#pin{flex:1;min-width:0;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px 8px;font:inherit;font-size:14px}
+.sz{flex:0 0 42px;padding:12px 0;font-weight:800}
+dialog{margin:auto;width:min(520px,calc(100% - 32px));max-height:calc(100% - 32px);background:var(--panel);color:var(--text);
+  border:1px solid var(--line);border-radius:14px;padding:18px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+dialog h2{font-size:16px;margin-bottom:12px}
+label{display:block;font-size:12px;color:var(--sub);margin:12px 0 4px}
+input[type=text],input[type=password],select,textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);
+  border-radius:8px;padding:10px;font:inherit;font-size:14px}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center}
+.row>*{flex:1}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-top:12px}
+.note{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
+.note a{color:var(--accent)}
+#testOut{font-size:14px;line-height:1.6;margin-top:8px;white-space:pre-wrap;color:var(--text)}
+.err{color:var(--red)}
+.dlgbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+</style>
+</head>
+<body>
+<header>
+  <span id="dot"></span>
+  <h1>WWE同時字幕</h1>
+  <span id="state">停止中</span>
+  <button id="logBtn" title="字幕ログをコピー">ログ</button>
+  <button id="setBtn" title="設定">設定</button>
+</header>
+
+<main id="subs">
+  <p id="empty">テレビの近くに置いて「開始」を押すと、<br>聞こえた英語を日本語の字幕にします。<br><br>最初に「設定」でAPIキーを入れてください。</p>
+</main>
+<div id="interim"><span></span></div>
+
+<footer>
+  <button id="go">開始</button>
+  <select id="pin" title="今しゃべっている人"><option value="">話者：自動</option></select>
+  <button class="sz" id="szDown">A−</button>
+  <button class="sz" id="szUp">A＋</button>
+</footer>
+
+<dialog id="dlg">
+  <h2>設定</h2>
+  <label for="engine">翻訳に使うAI</label>
+  <select id="engine">
+    <option value="gemini">Gemini（Google・無料枠あり）</option>
+    <option value="claude">Claude（Anthropic API）</option>
+  </select>
+  <label for="key">APIキー（この端末の中だけに保存されます）</label>
+  <input id="key" type="password" autocomplete="off" placeholder="ここに貼り付け">
+  <p class="note" id="keyHelp"></p>
+  <label for="model">モデル</label>
+  <div class="row"><select id="model"></select><button id="loadModels" style="flex:0 0 auto">一覧を取得</button></div>
+  <label class="chk"><input type="checkbox" id="showEn"> 英語の聞き取り結果も表示する</label>
+  <label for="testIn">お試し（英語を入れて訳を確認）</label>
+  <textarea id="testIn">You stole my moment, Sami. And I'm gonna take that title right off your shoulder. Acknowledge me.</textarea>
+  <div class="row" style="margin-top:8px"><button id="testBtn">訳してみる</button></div>
+  <div id="testOut"></div>
+  <div class="dlgbtns"><button id="close">閉じる</button></div>
+</dialog>
+
+<script src="glossary.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('wwelive.' + k); return v === null ? d : v; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem('wwelive.' + k, v); } catch {} }
+};
+
+/* ---------- 名前・口調の一覧 ---------- */
+const G = (typeof GLOSSARY === 'string') ? GLOSSARY : '';
+const speakers = [];
+for (const ln of G.split('\n')) {
+  const f = ln.split('\t');
+  if (f.length === 5 && !ln.startsWith('#')) speakers.push(f[1]);
+}
+for (const n of ['マイケル・コール','コーリー・グレイブス','ウェイド・バレット','ジョー・テシトーレ','ブッカーT']) if (!speakers.includes(n)) speakers.push(n);
+const pin = $('#pin');
+for (const n of speakers) { const o = document.createElement('option'); o.value = o.textContent = n; pin.appendChild(o); }
+
+const SYSTEM = `あなたはWWE中継の同時字幕係です。テレビから聞こえた英語を、音声認識が文字にしたものが届きます。日本語の字幕にしてください。
+
+# 入力の性質
+- 音声認識なので、固有名詞の聞き間違い、文の途切れ、話者の混在がある。話者の名前は付いていない。
+- 下の一覧（名前・口調・定訳・聞き間違い）と、直前の流れに照らして固有名詞を直してから訳す。一覧にない名前で確信が持てないものは英語の綴りのまま残す。
+- 届くのは発言の一部だけのこともある。途中で切れていても、その部分だけを自然な日本語にする。前の字幕と同じ内容を繰り返さない。
+
+# 話者
+- 直前の流れ、名乗り、呼びかけ、決め台詞、話の中身から、話している人を推定する。確信が持てないときは空にする。
+- ユーザーが話者を指定している場合は、その人の口調で訳す。
+- 実況（試合の描写）なら話者は実況者名（分からなければ「実況」）。
+
+# 訳し方
+- ABEMAの字幕のような自然な話し言葉。直訳調にしない。意味は正確に。原文にない煽りや冗談は足さない。
+- 話者が分かれば一覧の一人称・相手の呼び方・口調で訳す。キャラ語尾は要所だけ（1発言に1〜2回）。女言葉は一覧で指定した選手以外に使わない。
+- 話者不明なら中立の口調で、一人称を無理に入れない。
+- 決め台詞・異名は一覧の定訳をそのまま使う。スペイン語など英語以外の短いひと言はカタカナで残す。
+- 罵倒やスラングはぼかさず同程度の強さに。
+- 字幕として読みやすく、1文は短く。長いときは意味の区切りで改行してよい（最大3行）。
+- 観客のチャントだけ、雑音、意味のない断片なら t は空文字にする。チャントが聞き取れる場合は「（観客：〇〇コール）」のように書いてよい。
+
+# 出力
+JSONだけを返す：{"s":"話者のカタカナ名（不明なら空）","t":"日本語字幕"}
+
+# 名前・口調・定訳・聞き間違いの一覧
+${G}`;
+
+/* ---------- 設定 ---------- */
+const engineSel = $('#engine'), keyIn = $('#key'), modelSel = $('#model');
+const DEFAULT_MODEL = { gemini: 'gemini-2.5-flash-lite', claude: 'claude-haiku-5-5' };
+const CLAUDE_MODELS = ['claude-haiku-5-5', 'claude-sonnet-5-5'];
+function cfg() {
+  const engine = store.get('engine', 'gemini');
+  return { engine, key: store.get('key.' + engine, ''), model: store.get('model.' + engine, DEFAULT_MODEL[engine]) };
+}
+function fillModels(list, chosen) {
+  modelSel.innerHTML = '';
+  const all = [...new Set([chosen, ...list].filter(Boolean))];
+  for (const m of all) { const o = document.createElement('option'); o.value = o.textContent = m; modelSel.appendChild(o); }
+  modelSel.value = chosen;
+}
+function renderSettings() {
+  const c = cfg();
+  engineSel.value = c.engine; keyIn.value = c.key;
+  fillModels(c.engine === 'claude' ? CLAUDE_MODELS : [], c.model);
+  $('#loadModels').style.display = c.engine === 'gemini' ? '' : 'none';
+  $('#keyHelp').innerHTML = c.engine === 'gemini'
+    ? 'Google AI Studio の <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">APIキーのページ</a> で無料で作れます。キーを入れたら「一覧を取得」で使えるモデルを読み込みます。'
+    : 'Anthropic Console の <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">APIキーのページ</a> で作れます（従量課金）。';
+  $('#showEn').checked = store.get('showEn', '1') === '1';
+}
+engineSel.onchange = () => { store.set('engine', engineSel.value); renderSettings(); };
+keyIn.onchange = () => { store.set('key.' + engineSel.value, keyIn.value.trim()); };
+modelSel.onchange = () => { store.set('model.' + engineSel.value, modelSel.value); };
+$('#showEn').onchange = e => { store.set('showEn', e.target.checked ? '1' : '0'); applyEn(); };
+function applyEn() { document.body.classList.toggle('noen', store.get('showEn', '1') !== '1'); }
+applyEn();
+
+function pickGemini(models) {
+  const ok = models.filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+    .map(m => m.name.replace(/^models\//, ''))
+    .filter(n => /^gemini-/.test(n) && /flash/.test(n) && !/(image|tts|audio|live|embed|vision|exp|thinking|computer)/.test(n));
+  const ver = n => parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [0, 0])[1]);
+  const score = n => ver(n) * 100 + (/lite/.test(n) ? 10 : 0) - (/preview/.test(n) ? 5 : 0) - (/\d{3,}/.test(n.replace(/gemini-\d+(\.\d+)?/, '')) ? 1 : 0);
+  ok.sort((a, b) => score(b) - score(a));
+  return ok;
+}
+$('#loadModels').onclick = async () => {
+  store.set('key.gemini', keyIn.value.trim());
+  const out = $('#testOut'); out.className = ''; out.textContent = 'モデル一覧を取得中…';
+  try {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200&key=' + encodeURIComponent(keyIn.value.trim()));
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error?.message || r.status);
+    const list = pickGemini(j.models || []);
+    if (!list.length) throw new Error('使えるモデルが見つかりませんでした');
+    store.set('model.gemini', list[0]);
+    fillModels(list, list[0]);
+    out.textContent = `${list.length}件。速くて安い「${list[0]}」を選びました。`;
+  } catch (e) { out.className = 'err'; out.textContent = 'エラー：' + e.message; }
+};
+
+/* ---------- 翻訳 ---------- */
+let geminiNoThinkCfg = store.get('geminiNoThink', '') === '1';
+async function callGemini(c, user) {
+  const body = {
+    systemInstruction: { parts: [{ text: SYSTEM }] },
+    contents: [{ role: 'user', parts: [{ text: user }] }],
+    generationConfig: { responseMimeType: 'application/json', temperature: 0.3, maxOutputTokens: 400 }
+  };
+  if (!geminiNoThinkCfg) body.generationConfig.thinkingConfig = { thinkingBudget: 0 };
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent?key=${encodeURIComponent(c.key)}`;
+  let r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  if (r.status === 400 && !geminiNoThinkCfg) {
+    const t = await r.text();
+    if (/thinking/i.test(t)) {
+      geminiNoThinkCfg = true; store.set('geminiNoThink', '1');
+      delete body.generationConfig.thinkingConfig;
+      r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    } else throw new Error(JSON.parse(t).error?.message || 'HTTP 400');
+  }
+  const j = await r.json();
+  if (!r.ok) { const e = new Error(j.error?.message || 'HTTP ' + r.status); e.status = r.status; throw e; }
+  return (j.candidates?.[0]?.content?.parts || []).map(p => p.text || '').join('');
+}
+async function callClaude(c, user) {
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json', 'x-api-key': c.key, 'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: c.model, max_tokens: 400, temperature: 0.3,
+      system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  const j = await r.json();
+  if (!r.ok) { const e = new Error(j.error?.message || 'HTTP ' + r.status); e.status = r.status; throw e; }
+  return (j.content || []).map(b => b.text || '').join('');
+}
+function parseOut(txt) {
+  const m = txt.match(/\{[\s\S]*\}/);
+  if (!m) return { s: '', t: txt.trim() };
+  try { const o = JSON.parse(m[0]); return { s: (o.s || '').trim(), t: (o.t || '').trim() }; }
+  catch { return { s: '', t: txt.trim() }; }
+}
+const history = [];   // {en, s, ja}
+async function translate(en, pinned) {
+  const c = cfg();
+  if (!c.key) throw new Error('設定でAPIキーを入れてください');
+  const ctx = history.slice(-6).map(h => `- [${h.s || '?'}] ${h.en} → ${h.ja.replace(/\n/g, " ")}`).join('\n') || '（なし）';
+  const user = `## 直前の流れ（古い順）\n${ctx}\n\n` + (pinned ? `## 話者の指定\nこの発言の話者は「${pinned}」。\n\n` : '') + `## 今回の英語\n${en}`;
+  const txt = c.engine === 'claude' ? await callClaude(c, user) : await callGemini(c, user);
+  return parseOut(txt);
+}
+
+$('#testBtn').onclick = async () => {
+  store.set('key.' + engineSel.value, keyIn.value.trim());
+  const out = $('#testOut'); out.className = ''; out.textContent = '翻訳中…';
+  const t0 = performance.now();
+  try {
+    const r = await translate($('#testIn').value.trim(), pin.value);
+    out.textContent = (r.s ? `【${r.s}】\n` : '') + (r.t || '（字幕なし）') + `\n\n${((performance.now() - t0) / 1000).toFixed(1)}秒`;
+  } catch (e) { out.className = 'err'; out.textContent = 'エラー：' + e.message; }
+};
+
+/* ---------- 字幕の表示 ---------- */
+const subs = $('#subs');
+const log = [];
+function addSub(r, en) {
+  $('#empty')?.remove();
+  const d = document.createElement('div');
+  d.className = 'line';
+  if (r.s) { const w = document.createElement('span'); w.className = 'who'; w.textContent = r.s; d.appendChild(w); }
+  const j = document.createElement('span'); j.className = 'ja'; j.textContent = r.t; d.appendChild(j);
+  const e = document.createElement('span'); e.className = 'en'; e.textContent = en; d.appendChild(e);
+  subs.appendChild(d);
+  const lines = subs.querySelectorAll('.line');
+  lines.forEach((l, i) => { l.classList.toggle('cur', i === lines.length - 1); l.classList.toggle('prev', i === lines.length - 2); });
+  while (subs.children.length > 5) subs.firstElementChild.remove();
+  const t = new Date();
+  log.push(`[${t.toTimeString().slice(0, 8)}] ${r.s ? r.s + '：' : ''}${r.t}\n    ${en}`);
+}
+$('#logBtn').onclick = async () => {
+  const txt = log.join('\n') || '（まだ字幕がありません）';
+  try { await navigator.clipboard.writeText(txt); flash('ログをコピーしました'); }
+  catch { flash('コピーできませんでした'); }
+};
+let flashT;
+function flash(msg) { const s = $('#state'); const prev = s.dataset.base || s.textContent; s.textContent = msg; clearTimeout(flashT); flashT = setTimeout(() => s.textContent = s.dataset.base || prev, 2000); }
+function setState(txt, mode) { const s = $('#state'); s.dataset.base = txt; s.textContent = txt; $('#dot').className = mode || ''; }
+
+/* ---------- 送る順番の管理（1本ずつ・溜まった分はまとめて） ---------- */
+const pending = [];
+let inflight = false, backoffUntil = 0;
+function enqueue(text) {
+  text = text.replace(/\s+/g, ' ').trim();
+  if (!text || text.split(' ').length < 2 && text.length < 6) return;
+  pending.push({ text, pin: pin.value });
+  pump();
+}
+async function pump() {
+  if (inflight || !pending.length) return;
+  const wait = backoffUntil - Date.now();
+  if (wait > 0) { setTimeout(pump, wait); return; }
+  const batch = pending.splice(0, pending.length);
+  const en = batch.map(b => b.text).join(' ');
+  const p = batch[batch.length - 1].pin;
+  inflight = true; if (running) $('#dot').className = 'on busy';
+  try {
+    const r = await translate(en, p);
+    history.push({ en, s: r.s, ja: r.t }); if (history.length > 20) history.shift();
+    if (r.t) addSub(r, en);
+  } catch (e) {
+    if (e.status === 429 || e.status === 529 || e.status === 503) { backoffUntil = Date.now() + 4000; pending.unshift({ text: en, pin: p }); flash('混雑中…少し待ちます'); }
+    else flash('翻訳エラー：' + e.message.slice(0, 60));
+  } finally {
+    inflight = false; if (running) $('#dot').className = 'on';
+    pump();
+  }
+}
+
+/* ---------- 音声認識 ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null, running = false, wakeLock = null;
+let committed = { idx: -1, n: 0 };   // 確定前に先送りした単語数
+let lastFinal = '';
+const FLUSH_WORDS = 22, KEEP_TAIL = 4;
+const interimEl = $('#interim span');
+
+function startRec() {
+  rec = new SR();
+  rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.onresult = e => {
+    let interim = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const res = e.results[i];
+      const text = res[0].transcript.trim();
+      const words = text.split(/\s+/).filter(Boolean);
+      const done = committed.idx === i ? committed.n : 0;
+      if (res.isFinal) {
+        let rest = words.slice(done).join(' ');
+        if (rest === lastFinal) rest = '';
+        else if (lastFinal && rest.startsWith(lastFinal)) rest = rest.slice(lastFinal.length);
+        if (rest.trim()) { enqueue(rest); lastFinal = words.slice(done).join(' '); }
+        if (committed.idx === i) committed = { idx: -1, n: 0 };
+      } else {
+        // 長く話し続けて区切りが来ないときは、途中までを先に訳す
+        if (words.length - done >= FLUSH_WORDS) {
+          const upto = words.length - KEEP_TAIL;
+          enqueue(words.slice(done, upto).join(' '));
+          committed = { idx: i, n: upto };
+        }
+        interim += ' ' + words.slice(committed.idx === i ? committed.n : 0).join(' ');
+      }
+    }
+    interimEl.textContent = interim.trim();
+  };
+  rec.onerror = e => {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { stop(); flash('マイクが許可されていません'); }
+    else if (e.error === 'network') flash('音声認識の通信エラー');
+  };
+  rec.onend = () => {
+    committed = { idx: -1, n: 0 };
+    if (running) setTimeout(() => { if (running) { try { rec.start(); } catch { startRec(); } } }, 150);
+  };
+  rec.start();
+}
+async function start() {
+  if (!SR) { flash('このブラウザは音声認識に未対応です（Chromeで開いてください）'); return; }
+  if (!cfg().key) { renderSettings(); $('#dlg').showModal(); return; }
+  running = true;
+  $('#go').textContent = '停止'; $('#go').classList.add('stop');
+  setState('聞き取り中', 'on');
+  try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  startRec();
+}
+function stop() {
+  running = false;
+  try { rec?.stop(); } catch {}
+  wakeLock?.release?.(); wakeLock = null;
+  $('#go').textContent = '開始'; $('#go').classList.remove('stop');
+  setState('停止中', ''); interimEl.textContent = '';
+}
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState === 'visible' && running && !wakeLock) { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} }
+  if (document.visibilityState === 'visible') wakeLock = wakeLock && !wakeLock.released ? wakeLock : null;
+});
+$('#go').onclick = () => running ? stop() : start();
+
+/* ---------- 文字サイズ ---------- */
+let fs = +store.get('fs', '30');
+const applyFs = () => document.documentElement.style.setProperty('--fs', fs + 'px');
+applyFs();
+$('#szUp').onclick = () => { fs = Math.min(64, fs + 3); store.set('fs', fs); applyFs(); };
+$('#szDown').onclick = () => { fs = Math.max(16, fs - 3); store.set('fs', fs); applyFs(); };
+
+$('#setBtn').onclick = () => { renderSettings(); $('#dlg').showModal(); };
+$('#close').onclick = () => { store.set('key.' + engineSel.value, keyIn.value.trim()); $('#dlg').close(); };
+
+// テスト用（ブラウザのコンソールから英語を流し込める）
+window.wweFeed = enqueue;
+})();
+</script>
+</body>
+</html>
