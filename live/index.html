@@ -15,12 +15,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);
   font-family:"Hiragino Sans","Noto Sans JP",system-ui,sans-serif;-webkit-text-size-adjust:100%}
 body{display:flex;flex-direction:column;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
 header{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line)}
-header h1{font-size:15px;font-weight:800;letter-spacing:.04em;flex:1}
-#dot{width:10px;height:10px;border-radius:50%;background:#555}
+header h1{font-size:15px;font-weight:800;letter-spacing:.04em;flex:1;white-space:nowrap}
+#dot{width:10px;height:10px;border-radius:50%;background:#555;flex:0 0 auto}
 #dot.on{background:var(--red);box-shadow:0 0 0 0 rgba(255,77,94,.6);animation:pulse 1.6s infinite}
 #dot.busy{background:var(--accent)}
 @keyframes pulse{70%{box-shadow:0 0 0 10px rgba(255,77,94,0)}100%{box-shadow:0 0 0 0 rgba(255,77,94,0)}}
-#state{font-size:12px;color:var(--sub)}
+#state{font-size:12px;color:var(--sub);text-align:right}
+#state.err{color:var(--red)}
+#meter{height:3px;background:transparent}
+#meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .08s}
 button{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
 button:active{transform:scale(.97)}
 #subs{flex:1;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:16px;gap:14px}
@@ -53,8 +56,11 @@ textarea{min-height:70px;resize:vertical}
 .chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);margin-top:12px}
 .note{font-size:12px;color:var(--sub);line-height:1.6;margin-top:8px}
 .note a{color:var(--accent)}
-#testOut{font-size:14px;line-height:1.6;margin-top:8px;white-space:pre-wrap;color:var(--text)}
+#testOut,#diagOut{font-size:13px;line-height:1.6;margin-top:8px;white-space:pre-wrap;color:var(--text)}
+#diagMeter{height:8px;border-radius:4px;background:var(--bg);border:1px solid var(--line);margin-top:8px;overflow:hidden;display:none}
+#diagMeter i{display:block;height:100%;width:0;background:var(--ok)}
 .err{color:var(--red)}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0 4px}
 .dlgbtns{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
 </style>
 </head>
@@ -66,6 +72,7 @@ textarea{min-height:70px;resize:vertical}
   <button id="logBtn" title="字幕ログをコピー">ログ</button>
   <button id="setBtn" title="設定">設定</button>
 </header>
+<div id="meter"><i></i></div>
 
 <main id="subs">
   <p id="empty">テレビの近くに置いて「開始」を押すと、<br>聞こえた英語を日本語の字幕にします。<br><br>最初に「設定」でAPIキーを入れてください。</p>
@@ -91,7 +98,23 @@ textarea{min-height:70px;resize:vertical}
   <p class="note" id="keyHelp"></p>
   <label for="model">モデル</label>
   <div class="row"><select id="model"></select><button id="loadModels" style="flex:0 0 auto">一覧を取得</button></div>
+
+  <label for="mode">聞き取り方式</label>
+  <select id="mode">
+    <option value="auto">自動（使えるほうを選ぶ）</option>
+    <option value="browser">ブラウザの音声認識（遅れが少ない）</option>
+    <option value="gemini">Geminiに音声ごと送る（どの端末でも動く）</option>
+  </select>
+  <p class="note">ブラウザの音声認識が動かない端末では、自動でGeminiに音声ごと送る方式に切り替えます（字幕は5〜8秒ほど遅れます。GeminiのAPIキーが必要）。</p>
   <label class="chk"><input type="checkbox" id="showEn"> 英語の聞き取り結果も表示する</label>
+
+  <hr>
+  <label>マイクの確認</label>
+  <div class="row"><button id="diagBtn">マイクを確認する（約10秒）</button></div>
+  <div id="diagMeter"><i></i></div>
+  <div id="diagOut"></div>
+
+  <hr>
   <label for="testIn">お試し（英語を入れて訳を確認）</label>
   <textarea id="testIn">You stole my moment, Sami. And I'm gonna take that title right off your shoulder. Acknowledge me.</textarea>
   <div class="row" style="margin-top:8px"><button id="testBtn">訳してみる</button></div>
@@ -108,6 +131,7 @@ const store = {
   get(k, d) { try { const v = localStorage.getItem('wwelive.' + k); return v === null ? d : v; } catch { return d; } },
   set(k, v) { try { localStorage.setItem('wwelive.' + k, v); } catch {} }
 };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 /* ---------- 名前・口調の一覧 ---------- */
 const G = (typeof GLOSSARY === 'string') ? GLOSSARY : '';
@@ -120,15 +144,8 @@ for (const n of ['マイケル・コール','コーリー・グレイブス','�
 const pin = $('#pin');
 for (const n of speakers) { const o = document.createElement('option'); o.value = o.textContent = n; pin.appendChild(o); }
 
-const SYSTEM = `あなたはWWE中継の同時字幕係です。テレビから聞こえた英語を、音声認識が文字にしたものが届きます。日本語の字幕にしてください。
-
-# 入力の性質
-- 音声認識なので、固有名詞の聞き間違い、文の途切れ、話者の混在がある。話者の名前は付いていない。
-- 下の一覧（名前・口調・定訳・聞き間違い）と、直前の流れに照らして固有名詞を直してから訳す。一覧にない名前で確信が持てないものは英語の綴りのまま残す。
-- 届くのは発言の一部だけのこともある。途中で切れていても、その部分だけを自然な日本語にする。前の字幕と同じ内容を繰り返さない。
-
-# 話者
-- 直前の流れ、名乗り、呼びかけ、決め台詞、話の中身から、話している人を推定する。確信が持てないときは空にする。
+const RULES = `# 話者
+- 直前の流れ、名乗り、呼びかけ、決め台詞、話の中身、声の違いから、話している人を推定する。確信が持てないときは空にする。
 - ユーザーが話者を指定している場合は、その人の口調で訳す。
 - 実況（試合の描写）なら話者は実況者名（分からなければ「実況」）。
 
@@ -139,7 +156,17 @@ const SYSTEM = `あなたはWWE中継の同時字幕係です。テレビから�
 - 決め台詞・異名は一覧の定訳をそのまま使う。スペイン語など英語以外の短いひと言はカタカナで残す。
 - 罵倒やスラングはぼかさず同程度の強さに。
 - 字幕として読みやすく、1文は短く。長いときは意味の区切りで改行してよい（最大3行）。
-- 観客のチャントだけ、雑音、意味のない断片なら t は空文字にする。チャントが聞き取れる場合は「（観客：〇〇コール）」のように書いてよい。
+- 前の字幕と同じ内容を繰り返さない。
+- 観客のチャントだけ、雑音、意味のない断片なら t は空文字にする。チャントが聞き取れる場合は「（観客：〇〇コール）」のように書いてよい。`;
+
+const SYSTEM_TEXT = `あなたはWWE中継の同時字幕係です。テレビから聞こえた英語を、音声認識が文字にしたものが届きます。日本語の字幕にしてください。
+
+# 入力の性質
+- 音声認識なので、固有名詞の聞き間違い、文の途切れ、話者の混在がある。話者の名前は付いていない。
+- 下の一覧（名前・口調・定訳・聞き間違い）と、直前の流れに照らして固有名詞を直してから訳す。一覧にない名前で確信が持てないものは英語の綴りのまま残す。
+- 届くのは発言の一部だけのこともある。途中で切れていても、その部分だけを自然な日本語にする。
+
+${RULES}
 
 # 出力
 JSONだけを返す：{"s":"話者のカタカナ名（不明なら空）","t":"日本語字幕"}
@@ -147,12 +174,27 @@ JSONだけを返す：{"s":"話者のカタカナ名（不明なら空）","t":"
 # 名前・口調・定訳・聞き間違いの一覧
 ${G}`;
 
+const SYSTEM_AUDIO = `あなたはWWE中継の同時字幕係です。テレビの音をスマホのマイクで拾った数秒の音声が届きます。英語の発言を聞き取り、日本語の字幕にしてください。
+
+# 入力の性質
+- 数秒ごとに区切った音声なので、頭と終わりで言葉が切れていることがある。切れた部分は無理に補わず、聞き取れた部分だけを訳す。
+- 実況、観客の歓声やチャント、入場曲などが混ざる。英語の発言を優先する。
+- 固有名詞は下の一覧（名前・口調・定訳）と直前の流れに照らして判断する。一覧にない名前で確信が持てないものは英語の綴りのまま残す。
+
+${RULES}
+
+# 出力
+JSONだけを返す：{"en":"聞き取った英語（なければ空）","s":"話者のカタカナ名（不明なら空）","t":"日本語字幕"}
+
+# 名前・口調・定訳・聞き間違いの一覧
+${G}`;
+
 /* ---------- 設定 ---------- */
-const engineSel = $('#engine'), keyIn = $('#key'), modelSel = $('#model');
+const engineSel = $('#engine'), keyIn = $('#key'), modelSel = $('#model'), modeSel = $('#mode');
 const DEFAULT_MODEL = { gemini: 'gemini-2.5-flash-lite', claude: 'claude-haiku-5-5' };
 const CLAUDE_MODELS = ['claude-haiku-5-5', 'claude-sonnet-5-5'];
-function cfg() {
-  const engine = store.get('engine', 'gemini');
+function cfg(engine) {
+  engine = engine || store.get('engine', 'gemini');
   return { engine, key: store.get('key.' + engine, ''), model: store.get('model.' + engine, DEFAULT_MODEL[engine]) };
 }
 function fillModels(list, chosen) {
@@ -168,12 +210,14 @@ function renderSettings() {
   $('#loadModels').style.display = c.engine === 'gemini' ? '' : 'none';
   $('#keyHelp').innerHTML = c.engine === 'gemini'
     ? 'Google AI Studio の <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">APIキーのページ</a> で無料で作れます。キーを入れたら「一覧を取得」で使えるモデルを読み込みます。'
-    : 'Anthropic Console の <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">APIキーのページ</a> で作れます（従量課金）。';
+    : 'Anthropic Console の <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">APIキーのページ</a> で作れます（従量課金）。音声ごと送る方式はGeminiのキーが別に必要です。';
   $('#showEn').checked = store.get('showEn', '1') === '1';
+  modeSel.value = store.get('mode', 'auto');
 }
 engineSel.onchange = () => { store.set('engine', engineSel.value); renderSettings(); };
 keyIn.onchange = () => { store.set('key.' + engineSel.value, keyIn.value.trim()); };
 modelSel.onchange = () => { store.set('model.' + engineSel.value, modelSel.value); };
+modeSel.onchange = () => { store.set('mode', modeSel.value); };
 $('#showEn').onchange = e => { store.set('showEn', e.target.checked ? '1' : '0'); applyEn(); };
 function applyEn() { document.body.classList.toggle('noen', store.get('showEn', '1') !== '1'); }
 applyEn();
@@ -202,24 +246,25 @@ $('#loadModels').onclick = async () => {
   } catch (e) { out.className = 'err'; out.textContent = 'エラー：' + e.message; }
 };
 
-/* ---------- 翻訳 ---------- */
+/* ---------- AIへの送信 ---------- */
 let geminiNoThinkCfg = store.get('geminiNoThink', '') === '1';
-async function callGemini(c, user) {
+async function callGemini(c, system, parts) {
   const body = {
-    systemInstruction: { parts: [{ text: SYSTEM }] },
-    contents: [{ role: 'user', parts: [{ text: user }] }],
-    generationConfig: { responseMimeType: 'application/json', temperature: 0.3, maxOutputTokens: 400 }
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: 'user', parts }],
+    generationConfig: { responseMimeType: 'application/json', temperature: 0.3, maxOutputTokens: 600 }
   };
   if (!geminiNoThinkCfg) body.generationConfig.thinkingConfig = { thinkingBudget: 0 };
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(c.model)}:generateContent?key=${encodeURIComponent(c.key)}`;
-  let r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  const send = () => fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  let r = await send();
   if (r.status === 400 && !geminiNoThinkCfg) {
     const t = await r.text();
     if (/thinking/i.test(t)) {
       geminiNoThinkCfg = true; store.set('geminiNoThink', '1');
       delete body.generationConfig.thinkingConfig;
-      r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
-    } else throw new Error(JSON.parse(t).error?.message || 'HTTP 400');
+      r = await send();
+    } else { let m = 'HTTP 400'; try { m = JSON.parse(t).error?.message || m; } catch {} throw new Error(m); }
   }
   const j = await r.json();
   if (!r.ok) { const e = new Error(j.error?.message || 'HTTP ' + r.status); e.status = r.status; throw e; }
@@ -234,7 +279,7 @@ async function callClaude(c, user) {
     },
     body: JSON.stringify({
       model: c.model, max_tokens: 400, temperature: 0.3,
-      system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+      system: [{ type: 'text', text: SYSTEM_TEXT, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: user }]
     })
   });
@@ -244,17 +289,27 @@ async function callClaude(c, user) {
 }
 function parseOut(txt) {
   const m = txt.match(/\{[\s\S]*\}/);
-  if (!m) return { s: '', t: txt.trim() };
-  try { const o = JSON.parse(m[0]); return { s: (o.s || '').trim(), t: (o.t || '').trim() }; }
-  catch { return { s: '', t: txt.trim() }; }
+  if (!m) return { en: '', s: '', t: txt.trim() };
+  try { const o = JSON.parse(m[0]); return { en: (o.en || '').trim(), s: (o.s || '').trim(), t: (o.t || '').trim() }; }
+  catch { return { en: '', s: '', t: txt.trim() }; }
 }
 const history = [];   // {en, s, ja}
-async function translate(en, pinned) {
+function contextText(pinned) {
+  const ctx = history.slice(-6).map(h => `- [${h.s || '?'}] ${h.en} → ${h.ja.replace(/\n/g, ' ')}`).join('\n') || '（なし）';
+  return `## 直前の流れ（古い順）\n${ctx}\n\n` + (pinned ? `## 話者の指定\nこの発言の話者は「${pinned}」。\n\n` : '');
+}
+async function translateText(en, pinned) {
   const c = cfg();
   if (!c.key) throw new Error('設定でAPIキーを入れてください');
-  const ctx = history.slice(-6).map(h => `- [${h.s || '?'}] ${h.en} → ${h.ja.replace(/\n/g, " ")}`).join('\n') || '（なし）';
-  const user = `## 直前の流れ（古い順）\n${ctx}\n\n` + (pinned ? `## 話者の指定\nこの発言の話者は「${pinned}」。\n\n` : '') + `## 今回の英語\n${en}`;
-  const txt = c.engine === 'claude' ? await callClaude(c, user) : await callGemini(c, user);
+  const user = contextText(pinned) + `## 今回の英語\n${en}`;
+  const txt = c.engine === 'claude' ? await callClaude(c, user) : await callGemini(c, SYSTEM_TEXT, [{ text: user }]);
+  const r = parseOut(txt); r.en = en; return r;
+}
+async function translateAudio(wavB64, pinned) {
+  const c = cfg('gemini');
+  if (!c.key) throw new Error('音声ごと送る方式にはGeminiのAPIキーが必要です');
+  const user = contextText(pinned) + '## 今回の音声\n添付の音声を聞き取って字幕にする。';
+  const txt = await callGemini(c, SYSTEM_AUDIO, [{ text: user }, { inlineData: { mimeType: 'audio/wav', data: wavB64 } }]);
   return parseOut(txt);
 }
 
@@ -263,7 +318,7 @@ $('#testBtn').onclick = async () => {
   const out = $('#testOut'); out.className = ''; out.textContent = '翻訳中…';
   const t0 = performance.now();
   try {
-    const r = await translate($('#testIn').value.trim(), pin.value);
+    const r = await translateText($('#testIn').value.trim(), pin.value);
     out.textContent = (r.s ? `【${r.s}】\n` : '') + (r.t || '（字幕なし）') + `\n\n${((performance.now() - t0) / 1000).toFixed(1)}秒`;
   } catch (e) { out.className = 'err'; out.textContent = 'エラー：' + e.message; }
 };
@@ -271,19 +326,19 @@ $('#testBtn').onclick = async () => {
 /* ---------- 字幕の表示 ---------- */
 const subs = $('#subs');
 const log = [];
-function addSub(r, en) {
+function addSub(r) {
   $('#empty')?.remove();
   const d = document.createElement('div');
   d.className = 'line';
   if (r.s) { const w = document.createElement('span'); w.className = 'who'; w.textContent = r.s; d.appendChild(w); }
   const j = document.createElement('span'); j.className = 'ja'; j.textContent = r.t; d.appendChild(j);
-  const e = document.createElement('span'); e.className = 'en'; e.textContent = en; d.appendChild(e);
+  const e = document.createElement('span'); e.className = 'en'; e.textContent = r.en || ''; d.appendChild(e);
   subs.appendChild(d);
   const lines = subs.querySelectorAll('.line');
   lines.forEach((l, i) => { l.classList.toggle('cur', i === lines.length - 1); l.classList.toggle('prev', i === lines.length - 2); });
   while (subs.children.length > 5) subs.firstElementChild.remove();
   const t = new Date();
-  log.push(`[${t.toTimeString().slice(0, 8)}] ${r.s ? r.s + '：' : ''}${r.t}\n    ${en}`);
+  log.push(`[${t.toTimeString().slice(0, 8)}] ${r.s ? r.s + '：' : ''}${r.t}\n    ${r.en || ''}`);
 }
 $('#logBtn').onclick = async () => {
   const txt = log.join('\n') || '（まだ字幕がありません）';
@@ -291,51 +346,73 @@ $('#logBtn').onclick = async () => {
   catch { flash('コピーできませんでした'); }
 };
 let flashT;
-function flash(msg) { const s = $('#state'); const prev = s.dataset.base || s.textContent; s.textContent = msg; clearTimeout(flashT); flashT = setTimeout(() => s.textContent = s.dataset.base || prev, 2000); }
-function setState(txt, mode) { const s = $('#state'); s.dataset.base = txt; s.textContent = txt; $('#dot').className = mode || ''; }
+function flash(msg, isErr) {
+  const s = $('#state'); s.textContent = msg; s.classList.toggle('err', !!isErr);
+  clearTimeout(flashT);
+  flashT = setTimeout(() => { s.textContent = s.dataset.base || ''; s.classList.toggle('err', s.dataset.err === '1'); }, isErr ? 6000 : 2500);
+}
+function setState(txt, mode, isErr) {
+  const s = $('#state'); s.dataset.base = txt; s.dataset.err = isErr ? '1' : ''; s.textContent = txt; s.classList.toggle('err', !!isErr);
+  $('#dot').className = mode || '';
+}
+const meterBar = $('#meter i');
+function showLevel(v) { meterBar.style.width = Math.min(100, v * 400) + '%'; }
 
 /* ---------- 送る順番の管理（1本ずつ・溜まった分はまとめて） ---------- */
 const pending = [];
 let inflight = false, backoffUntil = 0;
-function enqueue(text) {
+function enqueueText(text) {
   text = text.replace(/\s+/g, ' ').trim();
   if (!text || text.split(' ').length < 2 && text.length < 6) return;
-  pending.push({ text, pin: pin.value });
+  pending.push({ kind: 'text', text, pin: pin.value });
+  pump();
+}
+function enqueueAudio(pcm) {
+  pending.push({ kind: 'audio', pcm, pin: pin.value });
+  // 遅れが溜まりすぎたら古い音声を捨てて、今に追いつく
+  let total = pending.reduce((a, p) => a + (p.pcm ? p.pcm.length : 0), 0);
+  while (total > OUT_RATE * 20 && pending.length > 1) { total -= pending.shift().pcm?.length || 0; }
   pump();
 }
 async function pump() {
   if (inflight || !pending.length) return;
   const wait = backoffUntil - Date.now();
   if (wait > 0) { setTimeout(pump, wait); return; }
-  const batch = pending.splice(0, pending.length);
-  const en = batch.map(b => b.text).join(' ');
+  const kind = pending[0].kind;
+  const batch = [];
+  while (pending.length && pending[0].kind === kind) batch.push(pending.shift());
   const p = batch[batch.length - 1].pin;
   inflight = true; if (running) $('#dot').className = 'on busy';
   try {
-    const r = await translate(en, p);
-    history.push({ en, s: r.s, ja: r.t }); if (history.length > 20) history.shift();
-    if (r.t) addSub(r, en);
+    let r;
+    if (kind === 'text') r = await translateText(batch.map(b => b.text).join(' '), p);
+    else r = await translateAudio(wavBase64(concatPcm(batch.map(b => b.pcm))), p);
+    history.push({ en: r.en, s: r.s, ja: r.t }); if (history.length > 20) history.shift();
+    if (r.t) addSub(r);
   } catch (e) {
-    if (e.status === 429 || e.status === 529 || e.status === 503) { backoffUntil = Date.now() + 4000; pending.unshift({ text: en, pin: p }); flash('混雑中…少し待ちます'); }
-    else flash('翻訳エラー：' + e.message.slice(0, 60));
+    if (e.status === 429 || e.status === 529 || e.status === 503) { backoffUntil = Date.now() + 4000; pending.unshift(...batch); flash('混雑中…少し待ちます'); }
+    else flash('翻訳エラー：' + e.message.slice(0, 80), true);
   } finally {
     inflight = false; if (running) $('#dot').className = 'on';
     pump();
   }
 }
 
-/* ---------- 音声認識 ---------- */
+/* ---------- 方式A：ブラウザの音声認識 ---------- */
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-let rec = null, running = false, wakeLock = null;
-let committed = { idx: -1, n: 0 };   // 確定前に先送りした単語数
+let rec = null, running = false, wakeLock = null, method = null, heardAudio = false, srWatchdog = null;
+let committed = { idx: -1, n: 0 };
 let lastFinal = '';
 const FLUSH_WORDS = 22, KEEP_TAIL = 4;
+const FATAL_SR = ['service-not-allowed', 'network', 'language-not-supported', 'audio-capture', 'bad-grammar'];
 const interimEl = $('#interim span');
 
 function startRec() {
   rec = new SR();
   rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.onaudiostart = () => { heardAudio = true; };
   rec.onresult = e => {
+    heardAudio = true;
     let interim = '';
     for (let i = e.resultIndex; i < e.results.length; i++) {
       const res = e.results[i];
@@ -346,13 +423,12 @@ function startRec() {
         let rest = words.slice(done).join(' ');
         if (rest === lastFinal) rest = '';
         else if (lastFinal && rest.startsWith(lastFinal)) rest = rest.slice(lastFinal.length);
-        if (rest.trim()) { enqueue(rest); lastFinal = words.slice(done).join(' '); }
+        if (rest.trim()) { enqueueText(rest); lastFinal = words.slice(done).join(' '); }
         if (committed.idx === i) committed = { idx: -1, n: 0 };
       } else {
-        // 長く話し続けて区切りが来ないときは、途中までを先に訳す
         if (words.length - done >= FLUSH_WORDS) {
           const upto = words.length - KEEP_TAIL;
-          enqueue(words.slice(done, upto).join(' '));
+          enqueueText(words.slice(done, upto).join(' '));
           committed = { idx: i, n: upto };
         }
         interim += ' ' + words.slice(committed.idx === i ? committed.n : 0).join(' ');
@@ -361,36 +437,193 @@ function startRec() {
     interimEl.textContent = interim.trim();
   };
   rec.onerror = e => {
-    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { stop(); flash('マイクが許可されていません'); }
-    else if (e.error === 'network') flash('音声認識の通信エラー');
+    if (e.error === 'not-allowed') { stop(); setState('マイクが許可されていません', '', true); showPermHelp(); return; }
+    if (FATAL_SR.includes(e.error)) srFailed('ブラウザの音声認識エラー（' + e.error + '）');
   };
   rec.onend = () => {
     committed = { idx: -1, n: 0 };
-    if (running) setTimeout(() => { if (running) { try { rec.start(); } catch { startRec(); } } }, 150);
+    if (running && method === 'browser') setTimeout(() => { if (running && method === 'browser') { try { rec.start(); } catch { startRec(); } } }, 150);
   };
-  rec.start();
+  try { rec.start(); } catch (e) { srFailed('ブラウザの音声認識を開始できません'); }
+}
+function srFailed(reason) {
+  if (!running || method !== 'browser') return;
+  clearTimeout(srWatchdog);
+  try { rec.onend = null; rec.abort(); } catch {}
+  if (store.get('mode', 'auto') === 'auto') {
+    flash(reason + '。音声ごと送る方式に切り替えます', true);
+    startAudioMethod();
+  } else { stop(); setState(reason, '', true); }
+}
+
+/* ---------- 方式B：音声をそのままGeminiへ ---------- */
+const OUT_RATE = 16000, MIN_SEC = 4, MAX_SEC = 7.5;
+let ac = null, stream = null, procNode = null, srcNode = null;
+let blocks = [], blockRms = [];
+async function openMic() {
+  return navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true } });
+}
+async function startAudioMethod() {
+  method = 'gemini';
+  if (!cfg('gemini').key) { stop(); setState('GeminiのAPIキーが必要です', '', true); renderSettings(); $('#dlg').showModal(); return; }
+  try { stream = await openMic(); }
+  catch (e) { stop(); setState('マイクを使えません（' + e.name + '）', '', true); showPermHelp(); return; }
+  ac = new (window.AudioContext || window.webkitAudioContext)();
+  await ac.resume();
+  srcNode = ac.createMediaStreamSource(stream);
+  procNode = ac.createScriptProcessor(4096, 1, 1);
+  blocks = []; blockRms = [];
+  procNode.onaudioprocess = ev => {
+    if (!running) return;
+    const d = new Float32Array(ev.inputBuffer.getChannelData(0));
+    let sum = 0; for (let i = 0; i < d.length; i++) sum += d[i] * d[i];
+    const rms = Math.sqrt(sum / d.length);
+    showLevel(rms);
+    blocks.push(d); blockRms.push(rms);
+    const blockSec = d.length / ac.sampleRate;
+    if (blocks.length * blockSec >= MAX_SEC) {
+      // 4秒〜7.5秒の間でいちばん静かな所で区切る
+      const from = Math.floor(MIN_SEC / blockSec);
+      let cut = blocks.length - 1, min = Infinity;
+      for (let i = from; i < blocks.length; i++) if (blockRms[i] < min) { min = blockRms[i]; cut = i; }
+      const take = blocks.splice(0, cut + 1), takeRms = blockRms.splice(0, cut + 1);
+      if (Math.max(...takeRms) > 0.006) enqueueAudio(resample(concatPcm(take), ac.sampleRate));
+    }
+  };
+  srcNode.connect(procNode); procNode.connect(ac.destination);
+  setState('聞き取り中（音声送信）', 'on');
+  interimEl.textContent = '';
+}
+function stopAudioMethod() {
+  try { procNode && (procNode.onaudioprocess = null); srcNode?.disconnect(); procNode?.disconnect(); } catch {}
+  stream?.getTracks().forEach(t => t.stop());
+  ac?.close?.();
+  ac = stream = procNode = srcNode = null; blocks = []; blockRms = [];
+  showLevel(0);
+}
+function concatPcm(arr) {
+  const n = arr.reduce((a, b) => a + b.length, 0), out = new Float32Array(n);
+  let o = 0; for (const a of arr) { out.set(a, o); o += a.length; }
+  return out;
+}
+function resample(pcm, rate) {
+  if (rate === OUT_RATE) return pcm;
+  const ratio = rate / OUT_RATE, n = Math.floor(pcm.length / ratio), out = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const s = i * ratio, e = Math.min(pcm.length, (i + 1) * ratio);
+    let sum = 0, c = 0; for (let j = Math.floor(s); j < e; j++) { sum += pcm[j]; c++; }
+    out[i] = c ? sum / c : 0;
+  }
+  return out;
+}
+function wavBase64(pcm) {
+  const buf = new ArrayBuffer(44 + pcm.length * 2), v = new DataView(buf);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + pcm.length * 2, true); w(8, 'WAVE'); w(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, OUT_RATE, true); v.setUint32(28, OUT_RATE * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, 'data'); v.setUint32(40, pcm.length * 2, true);
+  for (let i = 0; i < pcm.length; i++) { const x = Math.max(-1, Math.min(1, pcm[i])); v.setInt16(44 + i * 2, x < 0 ? x * 0x8000 : x * 0x7fff, true); }
+  const bytes = new Uint8Array(buf); let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(bin);
+}
+
+/* ---------- 開始・停止 ---------- */
+function showPermHelp() {
+  $('#empty')?.remove();
+  if ($('#perm')) return;
+  const p = document.createElement('p');
+  p.id = 'perm'; p.className = 'note'; p.style.cssText = 'font-size:14px;margin:auto 0;text-align:center';
+  p.innerHTML = 'マイクが使えませんでした。<br>アドレスバー左の鍵マーク →「権限」→「マイク」を「許可」にして、ページを再読み込みしてください。<br>Androidの設定 →「アプリ」→「Chrome」→「権限」でマイクが許可されているかも確認してください。';
+  subs.appendChild(p);
 }
 async function start() {
-  if (!SR) { flash('このブラウザは音声認識に未対応です（Chromeで開いてください）'); return; }
-  if (!cfg().key) { renderSettings(); $('#dlg').showModal(); return; }
+  const mode = store.get('mode', 'auto');
+  if (!cfg().key && !(mode !== 'browser' && cfg('gemini').key)) { renderSettings(); $('#dlg').showModal(); return; }
+  $('#perm')?.remove();
   running = true;
   $('#go').textContent = '停止'; $('#go').classList.add('stop');
-  setState('聞き取り中', 'on');
   try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  if (mode === 'gemini' || (mode === 'auto' && (!SR || store.get('srBroken', '') === '1'))) { await startAudioMethod(); return; }
+  if (!SR) { stop(); setState('このブラウザは音声認識に未対応です', '', true); return; }
+  method = 'browser'; heardAudio = false;
+  setState('聞き取り中', 'on');
   startRec();
+  // 5秒たってもマイクの音が届かなければ、動いていないと判断する
+  srWatchdog = setTimeout(() => {
+    if (running && method === 'browser' && !heardAudio) {
+      if (mode === 'auto') store.set('srBroken', '1');
+      srFailed('ブラウザの音声認識が反応しません');
+    }
+  }, 5000);
 }
 function stop() {
   running = false;
-  try { rec?.stop(); } catch {}
+  clearTimeout(srWatchdog);
+  try { if (rec) { rec.onend = null; rec.abort(); } } catch {}
+  stopAudioMethod();
+  method = null;
   wakeLock?.release?.(); wakeLock = null;
   $('#go').textContent = '開始'; $('#go').classList.remove('stop');
   setState('停止中', ''); interimEl.textContent = '';
 }
 document.addEventListener('visibilitychange', async () => {
-  if (document.visibilityState === 'visible' && running && !wakeLock) { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} }
-  if (document.visibilityState === 'visible') wakeLock = wakeLock && !wakeLock.released ? wakeLock : null;
+  if (document.visibilityState === 'visible' && running) { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} }
 });
 $('#go').onclick = () => running ? stop() : start();
+
+/* ---------- マイクの確認 ---------- */
+$('#diagBtn').onclick = async () => {
+  if (running) stop();
+  const out = $('#diagOut'), mBox = $('#diagMeter'), mBar = $('#diagMeter i');
+  const lines = [];
+  const say = (s, err) => { lines.push((err ? '× ' : '・') + s); out.innerHTML = ''; lines.forEach(l => { const d = document.createElement('div'); d.textContent = l; if (l.startsWith('×')) d.className = 'err'; out.appendChild(d); }); };
+  say('ページの安全性：' + (window.isSecureContext ? 'OK（https）' : 'NG（httpsで開いてください）'), !window.isSecureContext);
+  // 1) マイクの音量
+  let peak = 0;
+  try {
+    const st = await openMic();
+    say('マイクの許可：OK');
+    const ctx = new (window.AudioContext || window.webkitAudioContext)(); await ctx.resume();
+    const an = ctx.createAnalyser(); an.fftSize = 2048; ctx.createMediaStreamSource(st).connect(an);
+    const data = new Float32Array(an.fftSize);
+    mBox.style.display = 'block';
+    say('4秒間、テレビの音を拾います…');
+    const t0 = performance.now();
+    while (performance.now() - t0 < 4000) {
+      an.getFloatTimeDomainData(data);
+      let s = 0; for (const x of data) s += x * x;
+      const rms = Math.sqrt(s / data.length); peak = Math.max(peak, rms);
+      mBar.style.width = Math.min(100, rms * 400) + '%';
+      await sleep(50);
+    }
+    st.getTracks().forEach(t => t.stop()); ctx.close(); mBox.style.display = 'none';
+    say('マイクの音量：' + (peak > 0.01 ? 'OK（音を拾えています）' : '小さすぎます（テレビに近づけるか音量を上げてください）'), peak <= 0.01);
+  } catch (e) {
+    say('マイクの許可：NG（' + e.name + '）', true);
+    showPermHelp();
+    return;
+  }
+  // 2) ブラウザの音声認識
+  if (!SR) { say('ブラウザの音声認識：このブラウザにはありません → 音声ごと送る方式で動きます', true); return; }
+  say('ブラウザの音声認識を5秒試します（英語を流してください）…');
+  const ev = [];
+  const r = new SR(); r.lang = 'en-US'; r.continuous = true; r.interimResults = true;
+  let heard = '';
+  ['start', 'audiostart', 'soundstart', 'speechstart', 'end'].forEach(n => r.addEventListener(n, () => ev.push(n)));
+  r.onresult = e => { ev.push('result'); heard = Array.from(e.results).map(x => x[0].transcript).join(' '); };
+  r.onerror = e => ev.push('error:' + e.error);
+  try { r.start(); } catch (e) { ev.push('start失敗:' + e.message); }
+  await sleep(5000);
+  try { r.abort(); } catch {}
+  await sleep(300);
+  const ok = ev.includes('result');
+  say('ブラウザの音声認識：' + (ok ? 'OK' : '反応なし') + '（' + (ev.join(' → ') || 'イベントなし') + '）', !ok);
+  if (heard) say('聞き取れた英語：' + heard.slice(0, 120));
+  if (ok) { store.set('srBroken', ''); say('→ ブラウザの音声認識で動きます'); }
+  else { store.set('srBroken', '1'); say('→ この端末では音声ごと送る方式で動きます（GeminiのAPIキーが必要）'); }
+};
 
 /* ---------- 文字サイズ ---------- */
 let fs = +store.get('fs', '30');
@@ -403,7 +636,7 @@ $('#setBtn').onclick = () => { renderSettings(); $('#dlg').showModal(); };
 $('#close').onclick = () => { store.set('key.' + engineSel.value, keyIn.value.trim()); $('#dlg').close(); };
 
 // テスト用（ブラウザのコンソールから英語を流し込める）
-window.wweFeed = enqueue;
+window.wweFeed = enqueueText;
 })();
 </script>
 </body>
