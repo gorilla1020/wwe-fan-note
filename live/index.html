@@ -487,7 +487,7 @@ async function startAudioMethod() {
       let cut = blocks.length - 1, min = Infinity;
       for (let i = from; i < blocks.length; i++) if (blockRms[i] < min) { min = blockRms[i]; cut = i; }
       const take = blocks.splice(0, cut + 1), takeRms = blockRms.splice(0, cut + 1);
-      if (Math.max(...takeRms) > 0.006) enqueueAudio(resample(concatPcm(take), ac.sampleRate));
+      if (Math.max(...takeRms) > 0.0015) enqueueAudio(normalize(resample(concatPcm(take), ac.sampleRate)));
     }
   };
   srcNode.connect(procNode); procNode.connect(ac.destination);
@@ -500,6 +500,15 @@ function stopAudioMethod() {
   ac?.close?.();
   ac = stream = procNode = srcNode = null; blocks = []; blockRms = [];
   showLevel(0);
+}
+// 小さい音を聞き取りやすい大きさまで持ち上げる（最大30倍）
+function normalize(pcm) {
+  let peak = 0; for (let i = 0; i < pcm.length; i++) { const a = Math.abs(pcm[i]); if (a > peak) peak = a; }
+  if (!peak) return pcm;
+  const g = Math.min(30, 0.9 / peak);
+  if (g <= 1.05) return pcm;
+  for (let i = 0; i < pcm.length; i++) pcm[i] *= g;
+  return pcm;
 }
 function concatPcm(arr) {
   const n = arr.reduce((a, b) => a + b.length, 0), out = new Float32Array(n);
@@ -599,7 +608,7 @@ $('#diagBtn').onclick = async () => {
       await sleep(50);
     }
     st.getTracks().forEach(t => t.stop()); ctx.close(); mBox.style.display = 'none';
-    say('マイクの音量：' + (peak > 0.01 ? 'OK（音を拾えています）' : '小さすぎます（テレビに近づけるか音量を上げてください）'), peak <= 0.01);
+    say('マイクの音量：' + Math.round(peak * 1000) + '（目安：30以上で十分、5未満は小さすぎ）' + (peak > 0.005 ? '' : ' → テレビに近づけるか音量を上げてください'), peak <= 0.005);
   } catch (e) {
     say('マイクの許可：NG（' + e.name + '）', true);
     showPermHelp();
