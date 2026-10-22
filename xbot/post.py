@@ -118,6 +118,15 @@ def main():
                 save(s)
                 log('%s は古いので投稿せずに閉じた' % name)
                 continue
+            if q.get('test'):
+                # テスト投稿：親ポストを作らず単独で投稿する
+                while fs['n'] < len(flat):
+                    tid = tweet(flat[fs['n']])
+                    log('テスト投稿 %s' % tid)
+                    fs['n'] += 1
+                    posted += 1
+                    save(s)
+                continue
             ep = s['eps'].setdefault(q['ep'], {})
             if not ep.get('parent'):
                 pid = tweet(parent_text(q['show'], q['date']))
