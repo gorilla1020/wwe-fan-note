@@ -1,6 +1,7 @@
 # X 自動投稿（GitHub Actions で動く）
 # xbot/queue/*.json を古い順に読み、番組の回ごとに「ネタバレ注意」の親ポストを1つ立て、
 # その下に訳を返信でつないでいく。どこまで投稿したかは xbot/state.json に残す。
+# xbot/scheduled/*.json は予約投稿。各投稿の at（日時）を過ぎたら単独のポストとして出す。
 # X のキー（リポジトリの Secrets）が無いときは DRY RUN（X には送らず、ログだけ書く）。
 import datetime
 import glob
@@ -85,6 +86,48 @@ def queued_at(name):
         return None
 
 
+LATE_HOURS = 6  # 予約時刻から6時間以上遅れたもの（パソコンや GitHub の停止など）は出さずに閉じる
+
+
+def parse_at(v):
+    t = datetime.datetime.fromisoformat(v)
+    if t.tzinfo is None:
+        t = t.replace(tzinfo=datetime.timezone(datetime.timedelta(hours=9)))  # 日本時間
+    return t
+
+
+def run_scheduled(s, now, budget):
+    """予約投稿のうち時刻を過ぎたものを出す。出した件数を返す。"""
+    done = s.setdefault('sched', {})
+    n = 0
+    for path in sorted(glob.glob(os.path.join(D, 'scheduled', '*.json'))):
+        name = os.path.basename(path)
+        with open(path, encoding='utf-8') as f:
+            q = json.load(f)
+        fin = done.setdefault(name, [])
+        for i, p in enumerate(q.get('posts', [])):
+            if i in fin:
+                continue
+            at = parse_at(p['at'])
+            if at > now:
+                continue
+            if (now - at).total_seconds() > LATE_HOURS * 3600:
+                fin.append(i)
+                save(s)
+                log('%s #%d は予約時刻を大きく過ぎたので出さずに閉じた' % (name, i + 1))
+                continue
+            if n >= budget:
+                return n
+            tid = tweet(p['text'])
+            fin.append(i)
+            save(s)
+            if tid:
+                n += 1
+                log('予約投稿 %s #%d %s' % (name, i + 1, tid))
+            time.sleep(2)
+    return n
+
+
 def main():
     if DRY:
         # 試運転：何も記録せず、投稿されるはずだった件数だけログに書く
@@ -103,6 +146,7 @@ def main():
     posted = 0
     now = datetime.datetime.now(datetime.timezone.utc)
     try:
+        posted += run_scheduled(s, now, MAX_PER_RUN)
         for path in sorted(glob.glob(os.path.join(D, 'queue', '*.json'))):
             name = os.path.basename(path)
             with open(path, encoding='utf-8') as f:
@@ -149,7 +193,8 @@ def main():
     except Stop:
         pass
     save(s)
-    log('今回 %d 件投稿' % posted)
+    if posted:
+        log('今回 %d 件投稿' % posted)
 
 
 if __name__ == '__main__':

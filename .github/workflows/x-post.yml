@@ -2,7 +2,9 @@ name: x-post
 on:
   push:
     branches: [main]
-    paths: ['xbot/queue/**']
+    paths: ['xbot/queue/**', 'xbot/scheduled/**']
+  schedule:
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 concurrency:
   group: x-post
