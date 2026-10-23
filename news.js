@@ -78,5 +78,17 @@ const NEWS = [
  b:"10月8日・15日の報道の続報。レスルボーツによると、大会は今のところ予定どおり進んでいるが、必要になったときのために米国内の代わりの会場が用意できているという。リヤドの空港への攻撃が報じられたことを受けて、サウジ行きを不安視する声が出ていた。",
  tags:["大会・日程"], who:[],
  src:[["WrestleVotes／Fightful Select（Fightfulが紹介）","https://www.fightful.com/?p=334147"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-diplomats", d:"2026-10-21", k:"rep", t:"クラウン・ジュエル2026を前に、米政府がサウジからの退避を指示",
+ b:"10月8日・15日の報道の続報。ロイター通信によると、米国務省がサウジアラビアにいる緊急でない職員と家族に国外退去を命じた。フーシ派による民間施設への攻撃が続いていることが理由という。デイブ・メルツァーは、WWEがクラウン・ジュエルで受け取る額を約5000万〜5500万ドル、来年のレッスルマニア43を約1億5000万ドルと見ているとWrestling Incが伝えた。",
+ tags:["大会・日程","レッスルマニア43"], who:[],
+ src:[["Reuters／Wrestling Observer（Wrestling Incが紹介）","https://www.wrestlinginc.com/2293746/us-state-dept-orders-diplomats-out-saudi-arabia-ahead-wwe-crown-jewel/"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-travel", d:"2026-10-23", k:"rep", t:"クラウン・ジュエル2026、渡航と収録の段取りが伝わる",
+ b:"10月21日の報道の続報。PWInsiderによると、WWEは11月7日のクラウン・ジュエルを予定どおりリヤドで開く方針という。Fightful Selectは、渡航に合わせて11月2日にSmackDownを前もって収録し、大会後は9日のRAWから米国に戻る段取りだと伝えた。メルツァーは、サウジでの大会を手放すと四半期の利益に響くことが判断の背景にあると見ている。",
+ tags:["大会・日程"], who:[],
+ src:[["PWInsider／Fightful Select（Wrestling Incが紹介）","https://www.wrestlinginc.com/2295017/wwe-crown-jewel-saudi-arabia-riyadh-taping-travel-plans/"]],
  res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
