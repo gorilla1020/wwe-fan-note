@@ -5706,6 +5706,7 @@ function show(tab, push){
   $("v-player").hidden = true; $("v-article").hidden = true; $("v-guide").hidden = true;
   document.querySelectorAll(".tab").forEach((b) => { if (b.dataset.tab === tab) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   store.set("tab", tab);
+  if (tab === "news") markNewsSeen(); else newsDot();
   if (push) { try { history.replaceState(null, "", "#" + tab); } catch (e) {} window.scrollTo(0, 0); }
 }
 document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => show(b.dataset.tab, true)));
@@ -6020,9 +6021,26 @@ function renderTipFoot(){ const el = $("tipfoot"); if (!el) return; const u = ti
 const WK = {off:"公式発表", self:"本人発言", rep:"報道", rum:"噂"};
 const WR = {open:"答え合わせ：未確定", hit:"答え合わせ：当たり", miss:"答え合わせ：外れ", part:"答え合わせ：一部当たり"};
 let newsMode = store.get("newsmode", "wire"), wireK = "all", wireT = "all";
+/* 新着：記事が出た日（米国の日付）から3日以内。タブの点は、まだニュースのタブを開いていない新着があるときだけ付く */
+function isNewNews(n){
+  const t = new Date(+n.d.slice(0, 4), +n.d.slice(5, 7) - 1, +n.d.slice(8)), now = new Date();
+  const days = Math.floor((new Date(now.getFullYear(), now.getMonth(), now.getDate()) - t) / 864e5);
+  return days >= 0 && days <= 3;
+}
+function newsSeenIds(){ return String(store.get("newsseen", "")).split(",").filter(Boolean); }
+function newsDot(){
+  const el = $("news-dot"); if (!el || typeof NEWS === "undefined") return;
+  const s = newsSeenIds(); el.hidden = !NEWS.some((n) => isNewNews(n) && !s.includes(n.id));
+}
+function markNewsSeen(){
+  if (typeof NEWS === "undefined") return;
+  store.set("newsseen", NEWS.filter(isNewNews).map((n) => n.id).join(",")); newsDot();
+}
+newsDot();
+const newTag = (n) => isNewNews(n) ? `<span class="tag new">NEW</span>` : "";
 function wireCard(n){
   const open = n.safe || seen(n.d);
-  const head = `<div class="meta"><span class="tag k-${n.k}">${esc(WK[n.k] || "")}</span><span class="note">${esc(dateJa(n.d))}</span>${n.tags.map((t) => `<span class="tag ex">${esc(t)}</span>`).join("")}</div><h3>${esc(n.t)}</h3>`;
+  const head = `<div class="meta">${newTag(n)}<span class="tag k-${n.k}">${esc(WK[n.k] || "")}</span><span class="note">${esc(dateJa(n.d))}</span>${n.tags.map((t) => `<span class="tag ex">${esc(t)}</span>`).join("")}</div><h3>${esc(n.t)}</h3>`;
   const body = `<p>${esc(n.b)}</p>${n.who && n.who.length ? whoChips(n.who) : ""}`
     + (n.res ? `<div class="res"><span class="tag r-${n.res}">${esc(WR[n.res] || "")}</span>${n.rn ? `<p class="note">${esc(n.rn)}</p>` : ""}</div>` : "")
     + `<p class="note">出典：${srcLinks(n.src)}</p>`;
@@ -6207,8 +6225,8 @@ function homeTop(){
       <span class="hmore">${ml.segs.length > 3 ? `ほか${ml.segs.length - 3}本・` : ""}今週の英語もマイクのタブで →</span></button>`;
   const nw = typeof NEWS === "undefined" ? [] : NEWS.slice().sort((x, y) => x.d < y.d ? 1 : x.d > y.d ? -1 : 0).slice(0, 3);
   if (nw.length) h += `<div class="sec">ニュース</div>` + nw.map((n) => `<button type="button" class="acard" data-gotab="news">
-      <span class="meta"><span class="tag k-${n.k}">${esc(WK[n.k] || "")}</span><span class="note">${esc(dateJa(n.d))}</span></span><b>${esc(n.t)}</b>
-      ${n.safe || seen(n.d) ? "" : `<span class="note">「知識はここまで」より後に出た話です。中身は記事のタブで開けます。</span>`}</button>`).join("")
+      <span class="meta">${newTag(n)}<span class="tag k-${n.k}">${esc(WK[n.k] || "")}</span><span class="note">${esc(dateJa(n.d))}</span></span><b>${esc(n.t)}</b>
+      ${n.safe || seen(n.d) ? "" : `<span class="note">「知識はここまで」より後に出た話です。中身はニュースのタブで開けます。</span>`}</button>`).join("")
     + `<button type="button" class="back" data-gotab="news">ニュースをもっと見る →</button>`;
   if (typeof TODAY !== "undefined") {
     const now = new Date();

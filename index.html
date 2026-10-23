@@ -182,6 +182,9 @@ th{font-size:11px;color:var(--muted);font-weight:700}
 .tabs .wrap{display:flex;padding-inline:4px}
 .tab{flex:1;min-width:0;min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;color:var(--muted);font-size:11px;font-weight:700;cursor:pointer}
 .tab[aria-current=page]{color:var(--accent)}
+.tab{position:relative;padding:0;white-space:nowrap;letter-spacing:-.03em}
+.tab .dot{position:absolute;top:9px;left:calc(50% + 8px);width:9px;height:9px;border-radius:50%;background:var(--pink);box-shadow:0 0 0 2px var(--bg2)}
+.tag.new{background:var(--pink);border-color:var(--pink);color:var(--bg3);font-family:var(--latin);font-weight:900;letter-spacing:.04em}
 .tab svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tag.k-off{color:var(--mint)}.tag.k-self{color:var(--purple)}.tag.k-rep{color:var(--yellow)}.tag.k-rum{color:var(--pink)}
 .tag.r-hit{color:var(--mint)}.tag.r-miss{color:var(--pink)}.tag.r-part{color:var(--yellow)}.tag.r-open{color:var(--label)}
@@ -245,7 +248,7 @@ details.wire>summary .later{color:var(--label);font-size:12px}
 </section>
 
 <section class="view" id="v-news" hidden>
-  <h1>記事・ニュース</h1>
+  <h1>ニュース</h1>
   <div class="chips" id="c-newsmode"></div>
   <div id="news-wire">
   <p class="note">WWEに関するニュースと噂を集めています。どこから出た話かを4つに分けて表示します。「知識はここまで」より後に出た話は、見出しだけ出して中身を折りたたみます（見出しは結果が分からない書き方にしています）。</p>
@@ -315,7 +318,7 @@ details.wire>summary .later{color:var(--label);font-size:12px}
   <button class="tab" type="button" data-tab="watch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 9.5V20h14V9.5"/><path d="M10 20v-5h4v5"/></svg>ホーム</button>
   <button class="tab" type="button" data-tab="roster"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>選手</button>
   <button class="tab" type="button" data-tab="mic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>マイク</button>
-  <button class="tab" type="button" data-tab="news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>記事</button>
+  <button class="tab" type="button" data-tab="news"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>ニュース<span class="dot" id="news-dot" hidden></span></button>
   <button class="tab" type="button" data-tab="feuds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3 5 13h6l-1 8 8-10h-6z"/></svg>抗争</button>
   <button class="tab" type="button" data-tab="moves"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l6-6"/><path d="M10 14l-2-6 5 2 3-6 1 7 4 2-6 2z"/></svg>技</button>
   <button class="tab" type="button" data-tab="gloss"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6"/><path d="M9 13h4"/></svg>用語</button>
