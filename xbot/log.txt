@@ -1,2 +1,16 @@
 2026-10-22 11:03:34Z テスト投稿 2113224741431427414
 2026-10-22 11:03:34Z 今回 1 件投稿
+2026-10-24 01:23:33Z clips 2113784942396080544 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:33Z clips 2113786259038445733 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:33Z clips 2113787185379881142 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:33Z clips 2113790665016344799 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:33Z clips 2113791298406584807 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113792259829174399 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113792721651421678 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113793316198154683 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113795737158926678 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113796689349796126 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113797262346264840 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113800599351304434 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 2113801749781705099 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
+2026-10-24 01:23:34Z clips 動画ポスト 13 本中 0 本を文字起こし
