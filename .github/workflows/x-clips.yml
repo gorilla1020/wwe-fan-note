@@ -31,7 +31,7 @@ jobs:
         with:
           path: ~/.cache/huggingface
           key: whisper-small-en
-      - run: pip install -q requests requests-oauthlib faster-whisper
+      - run: (which ffmpeg || (sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg)) && pip install -q requests requests-oauthlib faster-whisper
       - name: fetch and transcribe
         env:
           X_API_KEY: ${{ secrets.X_API_KEY }}

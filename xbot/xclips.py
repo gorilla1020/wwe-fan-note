@@ -106,7 +106,11 @@ def transcribe(path):
     with open(os.path.join(D, 'names.txt'), encoding='utf-8') as f:
         names = ', '.join(l.strip() for l in f if l.strip())
     prompt = 'WWE promo and backstage interview. ' + names[:700]
-    segs, _ = _model.transcribe(path, language='en', initial_prompt=prompt, vad_filter=True, beam_size=5)
+    import numpy as np
+    raw = subprocess.run(['ffmpeg', '-nostdin', '-loglevel', 'error', '-i', path, '-f', 's16le', '-ac', '1',
+                          '-ar', '16000', '-'], capture_output=True, check=True).stdout
+    audio = np.frombuffer(raw, np.int16).astype(np.float32) / 32768.0
+    segs, _ = _model.transcribe(audio, language='en', initial_prompt=prompt, vad_filter=True, beam_size=5)
     return [{'t': round(sg.start), 'text': sg.text.strip()} for sg in segs if sg.text.strip()]
 
 
