@@ -1,0 +1,47 @@
+name: x-clips
+on:
+  schedule:
+    # 放送中（米国東部 20:00〜24:00 = UTC 0〜5時台）の RAW(月)・NXT(火)・SmackDown(金) に15分おき
+    - cron: '*/15 0-5 * * 2,3,6'
+  workflow_dispatch:
+    inputs:
+      hours:
+        description: '何時間前までさかのぼるか（空なら前回の続き）'
+        required: false
+        default: ''
+concurrency:
+  group: x-clips
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  clips:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: whisper-small-en
+      - run: pip install -q requests requests-oauthlib faster-whisper
+      - name: fetch and transcribe
+        env:
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+        run: python xbot/xclips.py "${{ github.event.inputs.hours }}"
+      - name: save
+        if: always()
+        run: |
+          git config user.name "WWE fan note bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add xbot/clips xbot/xclips_state.json xbot/log.txt
+          git diff --cached --quiet && exit 0
+          git commit -q -m "x: クリップの文字起こし [skip ci]"
+          for i in 1 2 3 4 5; do git pull -q --rebase origin main && git push -q origin main && exit 0; sleep 5; done
+          exit 1

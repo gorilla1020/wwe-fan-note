@@ -47,11 +47,14 @@ def save(s):
         json.dump(s, f, ensure_ascii=False, indent=1)
 
 
-def tweet(text, reply_to=None):
-    """投稿してIDを返す。重複で断られたら None（その1件は飛ばす）。それ以外の失敗は Stop。"""
+def tweet(text, reply_to=None, quote=None):
+    """投稿してIDを返す。重複で断られたら None（その1件は飛ばす）。それ以外の失敗は Stop。
+    quote があれば、そのポストを引用する（返信と同時に引用できなければ、引用なしの返信で出し直す）。"""
     body = {'text': text}
     if reply_to:
         body['reply'] = {'in_reply_to_tweet_id': reply_to}
+    if quote:
+        body['quote_tweet_id'] = str(quote)
     try:
         r = requests.post('https://api.x.com/2/tweets', json=body, auth=AUTH, timeout=30)
     except requests.RequestException as e:
@@ -62,6 +65,9 @@ def tweet(text, reply_to=None):
     if r.status_code == 403 and 'duplicate' in r.text.lower():
         log('重複のため1件飛ばした')
         return None
+    if quote and r.status_code in (400, 403):
+        log('引用つきで断られた（%s %s）。引用なしで出し直す' % (r.status_code, r.text[:200].replace('\n', ' ')))
+        return tweet(text, reply_to)
     log('投稿失敗 %s %s' % (r.status_code, r.text[:300].replace('\n', ' ')))
     raise Stop()
 
@@ -138,7 +144,7 @@ def main():
                 continue
             with open(path, encoding='utf-8') as f:
                 q = json.load(f)
-            k = sum(len(seg['posts']) for seg in q['segments'])
+            k = sum(len(seg['posts']) for seg in q.get('segments', []))
             n += k
         log('DRY RUN：Xのキーが未設定のため送っていない（未投稿の待ち %d 件）' % n)
         return
@@ -152,7 +158,8 @@ def main():
             with open(path, encoding='utf-8') as f:
                 q = json.load(f)
             fs = s['files'].setdefault(name, {'n': 0})
-            flat = [p for seg in q['segments'] for p in seg['posts']]
+            # (本文, 引用するポストID) の並び。引用は各場面の最初の投稿にだけ付ける
+            flat = [(p, seg.get('qt') if i == 0 else None) for seg in q['segments'] for i, p in enumerate(seg['posts'])]
             if fs['n'] >= len(flat):
                 continue
             t = queued_at(name)
@@ -165,7 +172,7 @@ def main():
             if q.get('test'):
                 # テスト投稿：親ポストを作らず単独で投稿する
                 while fs['n'] < len(flat):
-                    tid = tweet(flat[fs['n']])
+                    tid = tweet(*flat[fs['n']])
                     log('テスト投稿 %s' % tid)
                     fs['n'] += 1
                     posted += 1
@@ -182,7 +189,8 @@ def main():
                 if posted >= MAX_PER_RUN:
                     log('1回の上限（%d件）に達したので、残りは次の実行で投稿する' % MAX_PER_RUN)
                     raise Stop()
-                tid = tweet(flat[fs['n']], ep.get('last'))
+                text, qt = flat[fs['n']]
+                tid = tweet(text, ep.get('last'), qt)
                 if tid:
                     ep['last'] = tid
                     posted += 1
