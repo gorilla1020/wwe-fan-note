@@ -3,6 +3,10 @@ on:
   schedule:
     # 放送中（米国東部 20:00〜24:00 = UTC 0〜5時台）の RAW(月)・NXT(火)・SmackDown(金) に15分おき
     - cron: '*/15 0-5 * * 2,3,6'
+  push:
+    # xbot/xclips_request.txt を書き換えて push すると、その時間数だけさかのぼって取得する
+    branches: [main]
+    paths: ['xbot/xclips_request.txt']
   workflow_dispatch:
     inputs:
       hours:
@@ -34,7 +38,10 @@ jobs:
           X_API_SECRET: ${{ secrets.X_API_SECRET }}
           X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
           X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
-        run: python xbot/xclips.py "${{ github.event.inputs.hours }}"
+        run: |
+          H="${{ github.event.inputs.hours }}"
+          if [ "${{ github.event_name }}" = "push" ]; then H=$(head -1 xbot/xclips_request.txt | cut -d' ' -f1); fi
+          python xbot/xclips.py "$H"
       - name: save
         if: always()
         run: |
