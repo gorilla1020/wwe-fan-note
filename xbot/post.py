@@ -80,6 +80,12 @@ def parent_text(show, date):
             '%s #WWE' % (show, int(m), int(d), TAG.get(show, '')))
 
 
+def tease_text(show, date, tease):
+    y, m, d = date.split('-')
+    return ('【⚠️ネタバレ注意】WWE %s（%d/%d 米国放送）🎤\n\n%s\n\n▼マイク日本語訳は返信で\n%s #WWE'
+            % (show, int(m), int(d), tease.strip(), TAG.get(show, '')))
+
+
 STALE_HOURS = 24  # 置かれてから24時間以上たった投稿待ちは出さない（キー設定前にたまった分などが一気に流れないように）
 
 
@@ -144,7 +150,7 @@ def main():
                 continue
             with open(path, encoding='utf-8') as f:
                 q = json.load(f)
-            k = sum(len(seg['posts']) for seg in q.get('segments', []))
+            k = sum(len(seg['posts']) + (1 if seg.get('tease') else 0) for seg in q.get('segments', []))
             n += k
         log('DRY RUN：Xのキーが未設定のため送っていない（未投稿の待ち %d 件）' % n)
         return
@@ -158,13 +164,14 @@ def main():
             with open(path, encoding='utf-8') as f:
                 q = json.load(f)
             fs = s['files'].setdefault(name, {'n': 0})
-            # (本文, 引用するポストID) の並び。引用は各場面の最初の投稿にだけ付ける
+            # (本文, 引用するポストID) の並び。引用は各場面の最初の投稿にだけ付ける。匂わせ親の分も数に入れる
             flat = [(p, seg.get('qt') if i == 0 else None) for seg in q['segments'] for i, p in enumerate(seg['posts'])]
-            if fs['n'] >= len(flat):
+            total = len(flat) + sum(1 for seg in q['segments'] if (seg.get('tease') or '').strip())
+            if fs['n'] >= total:
                 continue
             t = queued_at(name)
             if t and (now - t).total_seconds() > STALE_HOURS * 3600:
-                fs['n'] = len(flat)
+                fs['n'] = total
                 fs['stale'] = True
                 save(s)
                 log('%s は古いので投稿せずに閉じた' % name)
@@ -178,25 +185,53 @@ def main():
                     posted += 1
                     save(s)
                 continue
+            # 場面ごとに tease（匂わせ）があれば、その場面だけの親ポストを単独で立て、訳はその下につなぐ。
+            # tease のない場面は、従来どおり回ごとの「ネタバレ注意」親ポストの下につなぐ。
+            items = []  # (種類, 本文, 引用ID)  種類: T=匂わせ親 / P=匂わせ親の下 / E=回の親の下
+            for seg in q['segments']:
+                t = (seg.get('tease') or '').strip()
+                if t:
+                    items.append(('T', tease_text(q['show'], q['date'], t), None))
+                for i, p in enumerate(seg['posts']):
+                    items.append(('P' if t else 'E', p, seg.get('qt') if i == 0 else None))
             ep = s['eps'].setdefault(q['ep'], {})
-            if not ep.get('parent'):
-                pid = tweet(parent_text(q['show'], q['date']))
-                ep['parent'] = ep['last'] = pid
-                save(s)
-                log('%s 親ポスト %s' % (q['ep'], pid))
-                time.sleep(2)
-            while fs['n'] < len(flat):
+            while fs['n'] < len(items):
                 if posted >= MAX_PER_RUN:
                     log('1回の上限（%d件）に達したので、残りは次の実行で投稿する' % MAX_PER_RUN)
                     raise Stop()
-                text, qt = flat[fs['n']]
-                tid = tweet(text, ep.get('last'), qt)
+                kind, text, qt = items[fs['n']]
+                if kind == 'T':
+                    tid = tweet(text) or tweet(text.replace('\n\n▼', ' ②\n\n▼', 1))
+                    if not tid:
+                        log('匂わせポストが重複で出せなかったので、この場面を飛ばす')
+                        n = fs['n'] + 1
+                        while n < len(items) and items[n][0] == 'P':
+                            n += 1
+                        fs['n'] = n
+                        save(s)
+                        continue
+                    fs['last'] = tid
+                    log('%s 匂わせ親ポスト %s' % (q['ep'], tid))
+                elif kind == 'P':
+                    tid = tweet(text, fs.get('last'), qt)
+                    if tid:
+                        fs['last'] = tid
+                else:
+                    if not ep.get('parent'):
+                        pid = tweet(parent_text(q['show'], q['date']))
+                        ep['parent'] = ep['last'] = pid
+                        save(s)
+                        log('%s 親ポスト %s' % (q['ep'], pid))
+                        time.sleep(2)
+                    tid = tweet(text, ep.get('last'), qt)
+                    if tid:
+                        ep['last'] = tid
                 if tid:
-                    ep['last'] = tid
                     posted += 1
                 fs['n'] += 1
                 save(s)
                 time.sleep(2)
+            flat = items
             log('%s 完了（%d件）' % (name, len(flat)))
     except Stop:
         pass
