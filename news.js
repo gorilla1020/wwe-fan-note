@@ -90,5 +90,11 @@ const NEWS = [
  b:"10月21日の報道の続報。PWInsiderによると、WWEは11月7日のクラウン・ジュエルを予定どおりリヤドで開く方針という。Fightful Selectは、渡航に合わせて11月2日にSmackDownを前もって収録し、大会後は9日のRAWから米国に戻る段取りだと伝えた。メルツァーは、サウジでの大会を手放すと四半期の利益に響くことが判断の背景にあると見ている。",
  tags:["大会・日程"], who:[],
  src:[["PWInsider／Fightful Select（Wrestling Incが紹介）","https://www.wrestlinginc.com/2295017/wwe-crown-jewel-saudi-arabia-riyadh-taping-travel-plans/"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-emanuel", d:"2026-10-22", k:"off", t:"クラウン・ジュエル2026、TKOのトップが現状を語る",
+ b:"10月8日以降の報道の続報。WWEの親会社TKOのアリ・エマニュエルCEOがFOXニュースのインタビューで、11月7日のリヤドでのクラウン・ジュエルは予定どおりで、何も中止していないと話したとSEScoopsなどが伝えた。社内のチームが現地の情勢を「毎日見ている」といい、開催するかどうか、移す場合はどこにするかも含めて準備しているという。",
+ tags:["大会・日程"], who:[],
+ src:[["FOX News（SEScoopsが紹介）","https://www.sescoops.com/article/ari-emanuel-says-wwe-crown-jewel-2026-is-still-set-for-riyadh"],["Yahoo Sports","https://sports.yahoo.com/wrestling/article/tko-ceo-ari-emanuel-gives-update-on-wwe-crown-jewel-amid-deadly-attacks-in-saudi-arabia-181110331.html"]],
  res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
