@@ -14,3 +14,4 @@
 2026-10-24 01:23:34Z clips 2113800599351304434 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
 2026-10-24 01:23:34Z clips 2113801749781705099 の文字起こし失敗 open() got an unexpected keyword argument 'metadata_errors'
 2026-10-24 01:23:34Z clips 動画ポスト 13 本中 0 本を文字起こし
+2026-10-24 01:26:14Z clips 動画ポスト 13 本中 13 本を文字起こし
