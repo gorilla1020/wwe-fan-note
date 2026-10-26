@@ -96,5 +96,17 @@ const NEWS = [
  b:"10月8日以降の報道の続報。WWEの親会社TKOのアリ・エマニュエルCEOがFOXニュースのインタビューで、11月7日のリヤドでのクラウン・ジュエルは予定どおりで、何も中止していないと話したとSEScoopsなどが伝えた。社内のチームが現地の情勢を「毎日見ている」といい、開催するかどうか、移す場合はどこにするかも含めて準備しているという。",
  tags:["大会・日程"], who:[],
  src:[["FOX News（SEScoopsが紹介）","https://www.sescoops.com/article/ari-emanuel-says-wwe-crown-jewel-2026-is-still-set-for-riyadh"],["Yahoo Sports","https://sports.yahoo.com/wrestling/article/tko-ceo-ari-emanuel-gives-update-on-wwe-crown-jewel-amid-deadly-attacks-in-saudi-arabia-181110331.html"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-embassy-airports", d:"2026-10-25", k:"rep", t:"クラウン・ジュエル2026を前に、米大使館がサウジの空港について新たに注意喚起",
+ b:"10月21日の報道の続報。POST Wrestlingによると、在サウジアラビア米国大使館が10月25日、国内の空港を使う際は「細心の注意」を払うよう求める警戒情報を出した。空港への攻撃や空域の閉鎖、欠航のおそれがあるためという。リヤドの空港は一部で運航を再開している。WWEは11月7日の大会について、変更を発表していない。",
+ tags:["大会・日程"], who:[],
+ src:[["POST Wrestling","https://www.postwrestling.com/2026/10/25/u-s-embassy-urges-extreme-caution-at-saudi-airports-in-fresh-alert-ahead-of-wwe-crown-jewel/"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-staff-unease", d:"2026-10-26", k:"rep", t:"クラウン・ジュエル2026、主催側との話し合いと社内の空気",
+ b:"10月23日の報道の続報。Fightful Selectによると、WWEはリヤド開催の方針を変えておらず、現地の主催側と絶えず連絡を取り合っているという。一方で、スタッフや選手の一部はこの状況に不満を持っていると伝えた。WWEから大会の変更は発表されていない。",
+ tags:["大会・日程"], who:[],
+ src:[["Fightful Select（Wrestle Zone／Yahoo Sportsが紹介）","https://sports.yahoo.com/articles/details-emerge-wwe-crown-jewel-121440496.html"],["Cultaholic","https://cultaholic.com/posts/latest-on-wwe-crown-jewel-2026-plans-amidst-us-embassy-riyadh-security-alert"]],
  res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
