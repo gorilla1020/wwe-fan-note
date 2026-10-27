@@ -108,5 +108,11 @@ const NEWS = [
  b:"10月23日の報道の続報。Fightful Selectによると、WWEはリヤド開催の方針を変えておらず、現地の主催側と絶えず連絡を取り合っているという。一方で、スタッフや選手の一部はこの状況に不満を持っていると伝えた。WWEから大会の変更は発表されていない。",
  tags:["大会・日程"], who:[],
  src:[["Fightful Select（Wrestle Zone／Yahoo Sportsが紹介）","https://sports.yahoo.com/articles/details-emerge-wwe-crown-jewel-121440496.html"],["Cultaholic","https://cultaholic.com/posts/latest-on-wwe-crown-jewel-2026-plans-amidst-us-embassy-riyadh-security-alert"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-onsite-crews", d:"2026-10-26", k:"rep", t:"クラウン・ジュエル2026、現地の準備チームから届く声",
+ b:"10月26日の報道の続報。Fightful Selectによると、リヤドの現地では関係者が何週間も前から準備を進めていて、大会は予定どおり行われる見込みだという。現地の関係者は情勢を「報道ほど悪くない」と話す一方、話を聞いた選手やスタッフはそれなりに不安を感じているとした。また、アリエル・ヘルワニは自身の番組で、前夜に現地で予定されている別団体の興行のスタッフが、バーレーンに飛んでからバスでリヤドへ入ると伝えたとeWrestlingが紹介している。",
+ tags:["大会・日程"], who:[],
+ src:[["Fightful Select（Fightful）","https://www.fightful.com/wrestling-news/wwe-crown-jewel-remains-planned-for-saudi-arabia"],["Fightful Select／The Ariel Helwani Show（eWrestlingが紹介）","https://ewrestling.com/article/latest-update-on-wwe-crown-jewel-saudi-arabia-wrestlemania-plans-and-the-sphere-rumors"]],
  res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
