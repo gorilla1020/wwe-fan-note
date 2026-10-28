@@ -114,5 +114,11 @@ const NEWS = [
  b:"10月26日の報道の続報。Fightful Selectによると、リヤドの現地では関係者が何週間も前から準備を進めていて、大会は予定どおり行われる見込みだという。現地の関係者は情勢を「報道ほど悪くない」と話す一方、話を聞いた選手やスタッフはそれなりに不安を感じているとした。また、アリエル・ヘルワニは自身の番組で、前夜に現地で予定されている別団体の興行のスタッフが、バーレーンに飛んでからバスでリヤドへ入ると伝えたとeWrestlingが紹介している。",
  tags:["大会・日程"], who:[],
  src:[["Fightful Select（Fightful）","https://www.fightful.com/wrestling-news/wwe-crown-jewel-remains-planned-for-saudi-arabia"],["Fightful Select／The Ariel Helwani Show（eWrestlingが紹介）","https://ewrestling.com/article/latest-update-on-wwe-crown-jewel-saudi-arabia-wrestlemania-plans-and-the-sphere-rumors"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+
+{id:"n-cj2026-venue-change", d:"2026-10-28", k:"off", t:"クラウン・ジュエル2026、直前に会場の変更が発表される",
+ b:"10月26日の報道の続報。リヤド・シーズンの公式Xが、11月7日のクラウン・ジュエルを予定していたリヤド・シーズン・スタジアムから別の会場に移すと発表し、新しい会場は2日以内に知らせるとした。チケットは全額払い戻しで、48時間以内に売り直すという。理由は明かされていない。Fightful Selectは、大会はリヤドで開かれる見込みで、WWE本社のスタッフもこの投稿で移転を知ったと伝えた。",
+ tags:["大会・日程"], who:[],
+ src:[["Riyadh Season公式X／Fightful Select（POST Wrestlingが紹介）","https://www.postwrestling.com/2026/10/28/wwe-crown-jewel-receives-last-minute-venue-change-reportedly-staying-in-riyadh/"],["Wrestling Inc","https://www.wrestlinginc.com/2300143/wwe-crown-jewel-2026-moving-new-venue-saudi-arabia-riyadh/"]],
+ res:"open", rn:"新しい会場がどこになるか、リヤドで開かれるかどうか。", safe:1}
 ];
