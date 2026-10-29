@@ -120,5 +120,11 @@ const NEWS = [
  b:"10月26日の報道の続報。リヤド・シーズンの公式Xが、11月7日のクラウン・ジュエルを予定していたリヤド・シーズン・スタジアムから別の会場に移すと発表し、新しい会場は2日以内に知らせるとした。チケットは全額払い戻しで、48時間以内に売り直すという。理由は明かされていない。Fightful Selectは、大会はリヤドで開かれる見込みで、WWE本社のスタッフもこの投稿で移転を知ったと伝えた。",
  tags:["大会・日程"], who:[],
  src:[["Riyadh Season公式X／Fightful Select（POST Wrestlingが紹介）","https://www.postwrestling.com/2026/10/28/wwe-crown-jewel-receives-last-minute-venue-change-reportedly-staying-in-riyadh/"],["Wrestling Inc","https://www.wrestlinginc.com/2300143/wwe-crown-jewel-2026-moving-new-venue-saudi-arabia-riyadh/"]],
- res:"open", rn:"新しい会場がどこになるか、リヤドで開かれるかどうか。", safe:1}
+ res:"open", rn:"新しい会場がどこになるか、リヤドで開かれるかどうか。", safe:1},
+
+{id:"n-cj2026-kingdom-arena", d:"2026-10-28", k:"rep", t:"クラウン・ジュエル2026、移った先の会場が伝わる",
+ b:"10月28日の会場変更の続報。デイブ・メルツァーやフォーブスのアルフレッド・コヌワによると、11月7日のクラウン・ジュエルはリヤド市内のキングダム・アリーナで開かれる見込みという。約3万人が入る会場で、6月のナイト・オブ・チャンピオンズも開かれた場所だとWrestleZoneは伝えた。会場を移した理由は明かされておらず、WWEやリヤド・シーズンからの正式な発表はまだ出ていない。",
+ tags:["大会・日程"], who:[],
+ src:[["Wrestling Observer（WrestleZoneが紹介）","https://www.wrestlezone.com/news/1668769-wwe-crown-jewel-2026-new-venue-kingdom-arena-riyadh"],["Forbes（Ringside Newsが紹介）","https://www.ringsidenews.com/new-venue-wwe-crown-jewel-2026-revealed-last-minute-change"]],
+ res:"open", rn:"正式な会場発表がキングダム・アリーナになるかどうか。"}
 ];
