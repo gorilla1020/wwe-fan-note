@@ -126,5 +126,16 @@ const NEWS = [
  b:"10月28日の会場変更の続報。デイブ・メルツァーやフォーブスのアルフレッド・コヌワによると、11月7日のクラウン・ジュエルはリヤド市内のキングダム・アリーナで開かれる見込みという。約3万人が入る会場で、6月のナイト・オブ・チャンピオンズも開かれた場所だとWrestleZoneは伝えた。会場を移した理由は明かされておらず、WWEやリヤド・シーズンからの正式な発表はまだ出ていない。",
  tags:["大会・日程"], who:[],
  src:[["Wrestling Observer（WrestleZoneが紹介）","https://www.wrestlezone.com/news/1668769-wwe-crown-jewel-2026-new-venue-kingdom-arena-riyadh"],["Forbes（Ringside Newsが紹介）","https://www.ringsidenews.com/new-venue-wwe-crown-jewel-2026-revealed-last-minute-change"]],
- res:"open", rn:"正式な会場発表がキングダム・アリーナになるかどうか。"}
+ res:"miss", rn:"10月30日、リヤド・シーズンの発表で、会場はキングダム・アリーナではなく「ザ・ヴェニュー」と分かった。"},
+
+{id:"n-cj2026-the-venue", d:"2026-10-30", k:"off", t:"クラウン・ジュエル2026、新しい会場が正式に決まる",
+ b:"10月28日の会場変更の続報。リヤド・シーズンが発表文で、11月7日のクラウン・ジュエルをリヤド市内の「ザ・ヴェニュー」（ANBアリーナとも呼ばれる屋内会場）で開くと明らかにし、チケットの販売も始まったとPWTorchなどが伝えた。同じ会場では前日の10月31日にボクシングのカネロ・アルバレスの試合が組まれている。先に報じられていたキングダム・アリーナとは別の会場になった。",
+ tags:["大会・日程"], who:[],
+ src:[["Riyadh Season発表文（PWTorchが紹介）","https://www.pwtorch.com/site/2026/10/30/wwe-announces-new-location-for-crown-jewel-ple/"],["WrestleZone","https://www.wrestlezone.com/news/1669134-wwe-crown-jewel-2026s-new-venue-revealed-after-last-minute-change"]], safe:1},
+
+{id:"n-cj2026-venue-reason", d:"2026-10-30", k:"rep", t:"クラウン・ジュエル2026、会場を移した理由について伝わる話",
+ b:"10月30日の会場決定の続報。デイブ・メルツァーによると、会場を移すと決めたのはWWEではなくサウジ側で、屋内の会場のほうが警備をしやすいことが大きな理由だという。メルツァーは、チケットの売れ行きが関係した可能性にも触れたとWrestleZoneが伝えた。新しい会場は、もとの屋外スタジアムよりかなり小さいとAthlon Sportsは伝えている。",
+ tags:["大会・日程"], who:[],
+ src:[["Wrestling Observer（WrestleZoneが紹介）","https://www.wrestlezone.com/news/1669134-wwe-crown-jewel-2026s-new-venue-revealed-after-last-minute-change"],["Wrestling Observer／Fightful Select（Athlon Sportsが紹介）","https://athlonsports.com/wrestling/wwe-crown-jewel-2026-new-venue-backstage-details"]],
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
 ];
