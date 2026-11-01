@@ -137,5 +137,34 @@ const NEWS = [
  b:"10月30日の会場決定の続報。デイブ・メルツァーによると、会場を移すと決めたのはWWEではなくサウジ側で、屋内の会場のほうが警備をしやすいことが大きな理由だという。メルツァーは、チケットの売れ行きが関係した可能性にも触れたとWrestleZoneが伝えた。新しい会場は、もとの屋外スタジアムよりかなり小さいとAthlon Sportsは伝えている。",
  tags:["大会・日程"], who:[],
  src:[["Wrestling Observer（WrestleZoneが紹介）","https://www.wrestlezone.com/news/1669134-wwe-crown-jewel-2026s-new-venue-revealed-after-last-minute-change"],["Wrestling Observer／Fightful Select（Athlon Sportsが紹介）","https://athlonsports.com/wrestling/wwe-crown-jewel-2026-new-venue-backstage-details"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"}
+ res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+{id:"n-wm43-us-backup", d:"2026-10-29", k:"rum", t:"レッスルマニア43、「もしもの備え」の中身が少し見えてくる",
+ b:"レスルボーツによると、サウジでの開催が難しくなった場合に備えて、WWEは米国内で開く代わりの計画を練っているという。候補の都市は伏せられている。ラスベガスのスフィアにも社内で関心はあったが、本格的な話し合いはなく、代わりの計画には入っていない見込みとPWManiaが伝えた。レッスルマニア43は今もサウジ開催の予定で、WWEから変更の発表はない。",
+ tags:["レッスルマニア43","大会・日程"], who:[],
+ src:[["WrestleVotes Radio／Fightful Select（PWManiaが紹介）","https://www.pwmania.com/backstage-update-on-wwe-wrestlemania-43-backup-plans"]],
+ res:"open", rn:"レッスルマニア43がサウジで開かれるかどうか。"},
+
+{id:"n-heyman-tv-idea", d:"2026-10-29", k:"rum", t:"ある大物のテレビ復帰について、裏方の案が伝わる",
+ b:"レスルボーツによると、ポール・ヘイマンを近いうちにテレビへ戻す案が出ているという。別の話にも関わりつつ、ザ・ヴィジョン、とくにブロン・ブレイカーとのつながりは残す方向だとFightfulが伝えた。まだ案の段階の話。",
+ tags:["選手"], who:["Paul Heyman","Bron Breakker"],
+ src:[["WrestleVotes Radio／Fightful Select（Fightful）","https://www.fightful.com/wrestling/working-creative-idea-for-paul-heymans-return-to-wwe-tv/"]],
+ res:"open", rn:""},
+
+{id:"n-dralistico-interest", d:"2026-10-29", k:"rum", t:"他団体のある選手に、WWEが目を向けるとの話",
+ b:"レスルボーツによると、AEWのドラリスティコの今後の身の振り方がはっきりしてきたら、WWEは関心を示す見込みだという。AEWとの契約は2026年12月までと見られているとFightfulが伝えた。兄のドラゴン・リーはWWEに所属している。",
+ tags:["選手"], who:["Dragon Lee"],
+ src:[["WrestleVotes Radio／Fightful Select（Fightful）","https://www.fightful.com/wrestling/wwe-expected-to-show-interest-in-dralistico-if-when-his-availability-becomes-clearer/"]],
+ res:"open", rn:""},
+
+{id:"n-hbk-creative-exec", d:"2026-10-30", k:"rep", t:"WWEの制作陣の人事、レッスルマニア43の後に動きか",
+ b:"PWInsiderによると、WWEはショーン・マイケルズを、ブルース・プリチャードに代わる制作・選手担当の幹部に引き上げるつもりだという。移るのはレッスルマニア43の後の予定で、プリチャードは相談役に回る見込み。マイケルズが抜けたあとのNXTでは、AJスタイルズが大きな役割を担うという見方も出ている。会社からの正式な発表はない。",
+ tags:["選手"], who:["Shawn Michaels","AJ Styles"],
+ src:[["PWInsider（Khel Nowが紹介）","https://khelnow.com/wwe/shawn-michaels-to-replace-bruce-prichard-wwe-202610"]],
+ res:"open", rn:"マイケルズが新しい役職に就くかどうか。"},
+
+{id:"n-jan1-sd-dynamite", d:"2026-11-01", k:"rep", t:"2027年元日のSmackDown、他団体との放送の重なりは避けられる見込み",
+ b:"デイブ・メルツァーによると、2027年1月1日（金）のAEWダイナマイトはSmackDownの始まる前に終わるため、2つの番組が同じ時間にぶつかることはないという。先に「真っ向勝負になる」と伝えた分を、メルツァー自身が訂正したとCultaholicが伝えた。"
+ ,
+ tags:["大会・日程"], who:[],
+ src:[["Wrestling Observer Radio（Cultaholicが紹介）","https://cultaholic.com/posts/aew-dynamite--wwe-smackdown-not-going-head-to-head-on-january-1"]]}
 ];
