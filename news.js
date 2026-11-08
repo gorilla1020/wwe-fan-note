@@ -78,7 +78,7 @@ const NEWS = [
  b:"10月8日・15日の報道の続報。レスルボーツによると、大会は今のところ予定どおり進んでいるが、必要になったときのために米国内の代わりの会場が用意できているという。リヤドの空港への攻撃が報じられたことを受けて、サウジ行きを不安視する声が出ていた。",
  tags:["大会・日程"], who:[],
  src:[["WrestleVotes／Fightful Select（Fightfulが紹介）","https://www.fightful.com/?p=334147"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。"},
 
 {id:"n-cj2026-diplomats", d:"2026-10-21", k:"rep", t:"クラウン・ジュエル2026を前に、米政府がサウジからの退避を指示",
  b:"10月8日・15日の報道の続報。ロイター通信によると、米国務省がサウジアラビアにいる緊急でない職員と家族に国外退去を命じた。フーシ派による民間施設への攻撃が続いていることが理由という。デイブ・メルツァーは、WWEがクラウン・ジュエルで受け取る額を約5000万〜5500万ドル、来年のレッスルマニア43を約1億5000万ドルと見ているとWrestling Incが伝えた。",
@@ -90,13 +90,13 @@ const NEWS = [
  b:"10月21日の報道の続報。PWInsiderによると、WWEは11月7日のクラウン・ジュエルを予定どおりリヤドで開く方針という。Fightful Selectは、渡航に合わせて11月2日にSmackDownを前もって収録し、大会後は9日のRAWから米国に戻る段取りだと伝えた。メルツァーは、サウジでの大会を手放すと四半期の利益に響くことが判断の背景にあると見ている。",
  tags:["大会・日程"], who:[],
  src:[["PWInsider／Fightful Select（Wrestling Incが紹介）","https://www.wrestlinginc.com/2295017/wwe-crown-jewel-saudi-arabia-riyadh-taping-travel-plans/"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。"},
 
 {id:"n-cj2026-emanuel", d:"2026-10-22", k:"off", t:"クラウン・ジュエル2026、TKOのトップが現状を語る",
  b:"10月8日以降の報道の続報。WWEの親会社TKOのアリ・エマニュエルCEOがFOXニュースのインタビューで、11月7日のリヤドでのクラウン・ジュエルは予定どおりで、何も中止していないと話したとSEScoopsなどが伝えた。社内のチームが現地の情勢を「毎日見ている」といい、開催するかどうか、移す場合はどこにするかも含めて準備しているという。",
  tags:["大会・日程"], who:[],
  src:[["FOX News（SEScoopsが紹介）","https://www.sescoops.com/article/ari-emanuel-says-wwe-crown-jewel-2026-is-still-set-for-riyadh"],["Yahoo Sports","https://sports.yahoo.com/wrestling/article/tko-ceo-ari-emanuel-gives-update-on-wwe-crown-jewel-amid-deadly-attacks-in-saudi-arabia-181110331.html"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。"},
 
 {id:"n-cj2026-embassy-airports", d:"2026-10-25", k:"rep", t:"クラウン・ジュエル2026を前に、米大使館がサウジの空港について新たに注意喚起",
  b:"10月21日の報道の続報。POST Wrestlingによると、在サウジアラビア米国大使館が10月25日、国内の空港を使う際は「細心の注意」を払うよう求める警戒情報を出した。空港への攻撃や空域の閉鎖、欠航のおそれがあるためという。リヤドの空港は一部で運航を再開している。WWEは11月7日の大会について、変更を発表していない。",
@@ -108,19 +108,19 @@ const NEWS = [
  b:"10月23日の報道の続報。Fightful Selectによると、WWEはリヤド開催の方針を変えておらず、現地の主催側と絶えず連絡を取り合っているという。一方で、スタッフや選手の一部はこの状況に不満を持っていると伝えた。WWEから大会の変更は発表されていない。",
  tags:["大会・日程"], who:[],
  src:[["Fightful Select（Wrestle Zone／Yahoo Sportsが紹介）","https://sports.yahoo.com/articles/details-emerge-wwe-crown-jewel-121440496.html"],["Cultaholic","https://cultaholic.com/posts/latest-on-wwe-crown-jewel-2026-plans-amidst-us-embassy-riyadh-security-alert"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。"},
 
 {id:"n-cj2026-onsite-crews", d:"2026-10-26", k:"rep", t:"クラウン・ジュエル2026、現地の準備チームから届く声",
  b:"10月26日の報道の続報。Fightful Selectによると、リヤドの現地では関係者が何週間も前から準備を進めていて、大会は予定どおり行われる見込みだという。現地の関係者は情勢を「報道ほど悪くない」と話す一方、話を聞いた選手やスタッフはそれなりに不安を感じているとした。また、アリエル・ヘルワニは自身の番組で、前夜に現地で予定されている別団体の興行のスタッフが、バーレーンに飛んでからバスでリヤドへ入ると伝えたとeWrestlingが紹介している。",
  tags:["大会・日程"], who:[],
  src:[["Fightful Select（Fightful）","https://www.fightful.com/wrestling-news/wwe-crown-jewel-remains-planned-for-saudi-arabia"],["Fightful Select／The Ariel Helwani Show（eWrestlingが紹介）","https://ewrestling.com/article/latest-update-on-wwe-crown-jewel-saudi-arabia-wrestlemania-plans-and-the-sphere-rumors"]],
- res:"open", rn:"予定どおりリヤドで開かれるかどうか。"},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。"},
 
 {id:"n-cj2026-venue-change", d:"2026-10-28", k:"off", t:"クラウン・ジュエル2026、直前に会場の変更が発表される",
  b:"10月26日の報道の続報。リヤド・シーズンの公式Xが、11月7日のクラウン・ジュエルを予定していたリヤド・シーズン・スタジアムから別の会場に移すと発表し、新しい会場は2日以内に知らせるとした。チケットは全額払い戻しで、48時間以内に売り直すという。理由は明かされていない。Fightful Selectは、大会はリヤドで開かれる見込みで、WWE本社のスタッフもこの投稿で移転を知ったと伝えた。",
  tags:["大会・日程"], who:[],
  src:[["Riyadh Season公式X／Fightful Select（POST Wrestlingが紹介）","https://www.postwrestling.com/2026/10/28/wwe-crown-jewel-receives-last-minute-venue-change-reportedly-staying-in-riyadh/"],["Wrestling Inc","https://www.wrestlinginc.com/2300143/wwe-crown-jewel-2026-moving-new-venue-saudi-arabia-riyadh/"]],
- res:"open", rn:"新しい会場がどこになるか、リヤドで開かれるかどうか。", safe:1},
+ res:"hit", rn:"11月7日、リヤドのザ・ヴェニュー（ANBアリーナ）で開かれた（11月8日のThe Nationalの記事で確認）。", safe:1},
 
 {id:"n-cj2026-kingdom-arena", d:"2026-10-28", k:"rep", t:"クラウン・ジュエル2026、移った先の会場が伝わる",
  b:"10月28日の会場変更の続報。デイブ・メルツァーやフォーブスのアルフレッド・コヌワによると、11月7日のクラウン・ジュエルはリヤド市内のキングダム・アリーナで開かれる見込みという。約3万人が入る会場で、6月のナイト・オブ・チャンピオンズも開かれた場所だとWrestleZoneは伝えた。会場を移した理由は明かされておらず、WWEやリヤド・シーズンからの正式な発表はまだ出ていない。",
